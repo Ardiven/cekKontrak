@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CekKontrak — AI-Powered Contract Risk Analyzer & Plain-Language Explainer</title>
+  <meta name="description" content="Pahami isi kontrak kos, kerja magang, pinjaman, dan S&K sebelum tanda tangan. Deteksi pasal berisiko otomatis dalam bahasa awam dengan Chatbot RAG terpercaya.">
+  
+  <!-- Modern Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <div class="brand" id="navBrand">
+        <div class="brand-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <path d="m9 15 2 2 4-4"></path>
+          </svg>
+        </div>
+        <span>CekKontrak</span>
+        <span class="brand-badge">AI Analyzer</span>
+      </div>
+
+      <div class="nav-actions">
+        <button class="btn-secondary" id="btnHistory" title="Buka Riwayat Dokumen">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+          Riwayat
+        </button>
+        <button class="btn-secondary" id="btnDocs" onclick="window.open('/docs', '_blank')">
+          API Swagger
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Container -->
+  <main class="main-container">
+
+    <!-- Global Disclaimer Banner -->
+    <div class="disclaimer-banner">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="8" x2="12" y2="12"></line>
+        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+      </svg>
+      <div>
+        <strong>Penting:</strong> Analisis CekKontrak bersifat <strong>edukatif</strong> dan <strong>bukan nasihat hukum resmi</strong>. Untuk keputusan penting bernilai tinggi, selalu konsultasikan kontrak Anda dengan advokat atau lembaga bantuan hukum.
+      </div>
+    </div>
+
+    <!-- Hero Section -->
+    <header class="hero-section" id="heroSection">
+      <div class="hero-tag">Pendamping Hukum Awam Berbasis AI</div>
+      <h1 class="hero-title">
+        Pahami Kontrakmu Dalam Beberapa Menit,<br>
+        <span>Sebelum Kamu Tanda Tangan.</span>
+      </h1>
+      <p class="hero-subtitle">
+        Unggah PDF atau tempel teks perjanjian kos, magang, pinjaman, atau S&K. Sistem menandai pasal berisiko secara visual, menjelaskannya dalam bahasa sehari-hari, dan membekali draf revisi adil.
+      </p>
+
+      <!-- 1-Click Sample Contracts Bar -->
+      <div class="samples-bar">
+        <span class="samples-label">Coba Contoh Langsung:</span>
+        <button class="btn-sample" data-sample="sewa_kos">
+          <span>🏠</span> Sewa Kos (Deposit & Penalti)
+        </button>
+        <button class="btn-sample" data-sample="kerja_magang">
+          <span>💼</span> Kerja Magang (Non-Compete)
+        </button>
+        <button class="btn-sample" data-sample="pinjaman">
+          <span>💳</span> Pinjaman Dana (Bunga Harian)
+        </button>
+        <button class="btn-sample" data-sample="snk_aplikasi">
+          <span>📱</span> S&K Aplikasi (Klausul Sepihak)
+        </button>
+      </div>
+    </header>
+
+    <!-- Upload & Input Card -->
+    <section class="glass-card input-card" id="inputCard">
+      <div class="tabs-header">
+        <button class="tab-btn active" id="tabUploadPdf">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+          </svg>
+          Unggah File PDF
+        </button>
+        <button class="tab-btn" id="tabPasteText">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="8" y1="6" x2="21" y2="6"></line>
+            <line x1="8" y1="12" x2="21" y2="12"></line>
+            <line x1="8" y1="18" x2="21" y2="18"></line>
+            <line x1="3" y1="6" x2="3.01" y2="6"></line>
+            <line x1="3" y1="12" x2="3.01" y2="12"></line>
+            <line x1="3" y1="18" x2="3.01" y2="18"></line>
+          </svg>
+          Tempel Teks Kontrak
+        </button>
+      </div>
+
+      <!-- Tab 1: PDF Upload -->
+      <div id="panelUploadPdf">
+        <div class="dropzone" id="pdfDropzone">
+          <div class="dropzone-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17 8 12 3 7 8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+          </div>
+          <div class="dropzone-text">Tarik & Lepas File PDF Kontrak ke Sini</div>
+          <div class="dropzone-hint">atau klik untuk memilih file dari komputer (Maksimal 10MB / 25 halaman)</div>
+          <input type="file" id="pdfFileInput" accept=".pdf" style="display: none;">
+        </div>
+
+        <div class="selected-file-info" id="selectedFileInfo" style="display: none;">
+          <div style="display: flex; align-items: center; gap: 0.6rem;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#818CF8" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path></svg>
+            <span id="selectedFileName" style="font-weight: 600;">kontrak.pdf</span>
+          </div>
+          <button class="btn-copy" id="btnRemoveFile">Batal</button>
+        </div>
+      </div>
+
+      <!-- Tab 2: Text Paste -->
+      <div id="panelPasteText" style="display: none;">
+        <div class="text-input-wrapper">
+          <textarea class="contract-textarea" id="contractTextInput" placeholder="Tempelkan seluruh teks pasal perjanjian di sini... (Minimal 20 karakter)"></textarea>
+          <div class="input-row">
+            <input type="text" class="input-field" id="contractTitleInput" placeholder="Judul Dokumen (Opsional)">
+            <select class="select-field" id="contractTypeSelect">
+              <option value="sewa_kos">Sewa Kos</option>
+              <option value="kerja_magang">Kerja Magang / Freelance</option>
+              <option value="pinjaman">Pinjaman Dana</option>
+              <option value="snk_aplikasi">Syarat & Ketentuan (S&K)</option>
+              <option value="lainnya" selected>Jenis Lainnya</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Button -->
+      <div style="margin-top: 1.75rem; display: flex; justify-content: flex-end;">
+        <button class="btn-primary" id="btnStartAnalysis">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+          </svg>
+          Mulai Analisis Kontrak
+        </button>
+      </div>
+    </section>
+
+    <!-- Loading State -->
+    <section class="glass-card loading-box" id="loadingBox">
+      <div class="spinner"></div>
+      <h3 id="loadingStatusText" style="font-size: 1.25rem; margin-bottom: 0.5rem;">Mengekstrak teks & memecah per pasal...</h3>
+      <p style="color: var(--text-muted); font-size: 0.9rem;">Sistem menganalisis potensi risiko dengan LLM dan menyusun penjelasan awam.</p>
+    </section>
+
+    <!-- Results Dashboard -->
+    <section class="results-dashboard" id="resultsDashboard">
+      
+      <!-- Top Overview Card -->
+      <div class="glass-card overview-card">
+        <div class="score-gauge-box">
+          <div class="radial-progress">
+            <svg class="radial-svg" viewBox="0 0 100 100">
+              <circle class="radial-bg" cx="50" cy="50" r="40"></circle>
+              <circle class="radial-bar" id="scoreBar" cx="50" cy="50" r="40" stroke="#EF4444" stroke-dasharray="251.2" stroke-dashoffset="100"></circle>
+            </svg>
+            <div class="gauge-center">
+              <div class="gauge-number" id="scoreNum">75</div>
+              <div class="gauge-label">Skor Risiko</div>
+            </div>
+          </div>
+          <span class="clause-badge merah" id="riskBadge" style="margin-top: 0.75rem;">Tinggi (Berisiko)</span>
+        </div>
+
+        <div class="overview-details">
+          <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem;">
+            <h2 class="doc-meta-title" id="docTitle">Perjanjian Sewa Kos</h2>
+            <span class="doc-type-pill" id="cacheBadge" style="display: none;">Dilayani dari Cache Hash ⚡</span>
+          </div>
+          <p class="doc-summary-text" id="docSummary">
+            Terdapat klausul denda dan pemotongan deposit sepihak yang berpotensi merugikan. Negosiasikan sebelum menyetujui.
+          </p>
+
+          <div class="stat-badges-row">
+            <div class="stat-badge red">
+              <span style="font-size: 1.4rem;">🔴</span>
+              <div>
+                <div class="stat-val" id="cntRed">2</div>
+                <div class="stat-lbl">Berisiko Tinggi</div>
+              </div>
+            </div>
+            <div class="stat-badge yellow">
+              <span style="font-size: 1.4rem;">🟡</span>
+              <div>
+                <div class="stat-val" id="cntYellow">1</div>
+                <div class="stat-lbl">Perlu Teliti</div>
+              </div>
+            </div>
+            <div class="stat-badge green">
+              <span style="font-size: 1.4rem;">🟢</span>
+              <div>
+                <div class="stat-val" id="cntGreen">4</div>
+                <div class="stat-lbl">Aman & Standar</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Toolbar Row -->
+      <div class="toolbar-row">
+        <div class="filter-pills">
+          <button class="filter-pill active" data-filter="all">Semua Pasal (<span id="totalClausesCount">0</span>)</button>
+          <button class="filter-pill" data-filter="merah">🔴 Berisiko (<span id="filterRedCount">0</span>)</button>
+          <button class="filter-pill" data-filter="kuning">🟡 Perlu Teliti (<span id="filterYellowCount">0</span>)</button>
+          <button class="filter-pill" data-filter="hijau">🟢 Aman (<span id="filterGreenCount">0</span>)</button>
+          <button class="filter-pill" data-filter="questions">📋 Bekal Pertanyaan (<span id="filterQCount">0</span>)</button>
+        </div>
+
+        <div style="display: flex; gap: 0.75rem;">
+          <button class="btn-secondary" id="btnExportPdf" title="Unduh Laporan Format PDF">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            Ekspor PDF
+          </button>
+          <button class="btn-secondary" id="btnResetAnalysis">Analisis Dokumen Baru</button>
+        </div>
+      </div>
+
+      <!-- Dashboard Two Column Grid (Clauses Left, Chatbot Right) -->
+      <div class="dashboard-grid">
+        
+        <!-- Left: Clauses or Questions View -->
+        <div>
+          <!-- Clauses List -->
+          <div class="clauses-container" id="clausesContainer"></div>
+
+          <!-- Questions View (Toggled via filter pill) -->
+          <div id="questionsContainer" style="display: none;">
+            <div class="glass-card" style="margin-bottom: 1.5rem;">
+              <h3 style="margin-bottom: 0.5rem;">Daftar Pertanyaan Sebelum Tanda Tangan</h3>
+              <p style="color: var(--text-secondary); font-size: 0.9rem;">
+                Gunakan daftar pertanyaan ini saat bernegosiasi dengan pihak pengelola atau perusahaan agar posisi tawar Anda lebih kuat.
+              </p>
+              <div class="questions-list" id="questionsList"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Sticky RAG Chatbot -->
+        <aside class="glass-card chat-card">
+          <div class="chat-header">
+            <div>
+              <div style="font-weight: 700; font-size: 1rem;">Tanya Kontrak (RAG)</div>
+              <div class="chat-status-indicator">
+                <span class="pulse-dot"></span>
+                <span>Berbasis Pasal Kontrak</span>
+              </div>
+            </div>
+            <button class="btn-copy" id="btnClearChat" title="Bersihkan Obrolan">Reset</button>
+          </div>
+
+          <!-- Message stream -->
+          <div class="chat-messages" id="chatMessages">
+            <div class="msg assistant">
+              Halo! Saya pendamping hukum awam Anda. Tanyakan apa saja tentang kontrak ini, misalnya:
+              <br><em>"Kalau saya keluar bulan ke-3, kena denda berapa?"</em> atau <em>"Bagaimana aturan pengembalian deposit?"</em>
+            </div>
+          </div>
+
+          <!-- Quick suggested prompts -->
+          <div class="chat-quick-prompts" id="quickPrompts">
+            <button class="quick-prompt-chip" data-prompt="Berapa denda jika saya berhenti sewa lebih awal?">Denda keluar awal?</button>
+            <button class="quick-prompt-chip" data-prompt="Bagaimana ketentuan pengembalian uang deposit?">Aturan deposit?</button>
+            <button class="quick-prompt-chip" data-prompt="Siapa yang menanggung biaya kerusakan fasilitas?">Tanggung jawab perbaikan?</button>
+            <button class="quick-prompt-chip" data-prompt="Apakah ada klausul perpanjangan otomatis?">Auto-renewal?</button>
+          </div>
+
+          <!-- Chat input -->
+          <form class="chat-input-bar" id="chatForm">
+            <input type="text" class="chat-input" id="chatInput" placeholder="Ketik pertanyaan seputar kontrak..." autocomplete="off">
+            <button type="submit" class="btn-send" id="btnSendChat" title="Kirim">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="22" y1="2" x2="11" y2="13"></line>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+              </svg>
+            </button>
+          </form>
+        </aside>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- History Modal -->
+  <div class="modal-overlay" id="historyModal">
+    <div class="modal-content">
+      <button class="modal-close" id="btnCloseHistory">&times;</button>
+      <h3 style="margin-bottom: 0.5rem;">Riwayat Analisis Dokumen</h3>
+      <p style="color: var(--text-muted); font-size: 0.88rem; margin-bottom: 1.5rem;">
+        Dokumen yang pernah dianalisis tersimpan dengan hash caching untuk akses instan tanpa menghabiskan kuota LLM.
+      </p>
+      <div id="historyListContainer" style="display: flex; flex-direction: column; gap: 0.85rem;">
+        <!-- Injected via JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast" id="toastNotification">
+    <span id="toastIcon">✓</span>
+    <span id="toastMessage">Teks berhasil disalin ke clipboard</span>
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>

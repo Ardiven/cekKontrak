@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+
+<html lang="id"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={"darkMode":"class","theme":{"extend":{"colors":{"on-surface-variant":"#45464d","surface-tint":"#565e74","surface":"#f8f9ff","primary-fixed-dim":"#bec6e0","inverse-surface":"#213145","on-error-container":"#93000a","on-background":"#0b1c30","on-tertiary-fixed":"#40000c","on-secondary":"#ffffff","primary-container":"#131b2e","surface-container-low":"#eff4ff","inverse-on-surface":"#eaf1ff","surface-variant":"#d3e4fe","secondary":"#006a61","tertiary-fixed":"#ffdada","primary-fixed":"#dae2fd","tertiary-fixed-dim":"#ffb3b6","primary":"#000000","tertiary":"#000000","secondary-container":"#86f2e4","on-secondary-fixed-variant":"#005049","outline-variant":"#c6c6cd","on-tertiary-container":"#f83256","error-container":"#ffdad6","surface-container-high":"#dce9ff","on-primary-fixed":"#131b2e","surface-bright":"#f8f9ff","background":"#f8f9ff","error":"#ba1a1a","secondary-fixed":"#89f5e7","secondary-fixed-dim":"#6bd8cb","inverse-primary":"#bec6e0","surface-container-highest":"#d3e4fe","surface-container":"#e5eeff","surface-dim":"#cbdbf5","on-primary-container":"#7c839b","on-tertiary-fixed-variant":"#920028","outline":"#76777d","surface-container-lowest":"#ffffff","on-secondary-container":"#006f66","on-tertiary":"#ffffff","on-primary":"#ffffff","on-error":"#ffffff","on-secondary-fixed":"#00201d","on-surface":"#0b1c30","tertiary-container":"#40000c","on-primary-fixed-variant":"#3f465c"},"borderRadius":{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},"spacing":{"space-md":"1rem","space-xl":"2.5rem","margin-mobile":"1rem","margin":"2rem","space-xs":"0.25rem","space-lg":"1.5rem","gutter-mobile":"1rem","gutter":"1.5rem","space-sm":"0.5rem"},"fontFamily":{"label-md":["Inter"],"title-sm":["Inter"],"headline-md":["Inter"],"body-legal":["Inter"],"headline-xl":["Inter"],"body-default":["Inter"],"headline-xl-mobile":["Inter"],"body-sm":["Inter"],"headline-lg":["Inter"],"headline-lg-mobile":["Inter"],"label-sm":["Inter"]},"fontSize":{"label-md":["12px",{"lineHeight":"16px","letterSpacing":"0.04em","fontWeight":"600"}],"title-sm":["16px",{"lineHeight":"24px","letterSpacing":"-0.01em","fontWeight":"600"}],"headline-md":["20px",{"lineHeight":"28px","letterSpacing":"-0.015em","fontWeight":"600"}],"body-legal":["15px",{"lineHeight":"26px","letterSpacing":"0em","fontWeight":"400"}],"headline-xl":["36px",{"lineHeight":"44px","letterSpacing":"-0.025em","fontWeight":"700"}],"body-default":["14px",{"lineHeight":"22px","letterSpacing":"0em","fontWeight":"400"}],"headline-xl-mobile":["28px",{"lineHeight":"36px","letterSpacing":"-0.02em","fontWeight":"700"}],"body-sm":["13px",{"lineHeight":"18px","letterSpacing":"0em","fontWeight":"400"}],"headline-lg":["28px",{"lineHeight":"30px","letterSpacing":"-0.02em","fontWeight":"600"}],"headline-lg-mobile":["22px",{"lineHeight":"30px","letterSpacing":"-0.015em","fontWeight":"600"}],"label-sm":["11px",{"lineHeight":"14px","letterSpacing":"0.05em","fontWeight":"500"}]}}}};</script></head><body class="bg-surface font-body-default text-on-surface antialiased"><aside class="fixed left-0 top-0 h-full w-64 bg-surface-container-lowest shadow-[0_1px_8px_rgba(0,0,0,0.03)] z-50 flex flex-col justify-between py-space-lg"><div class="flex flex-col"><div class="px-space-lg flex items-center gap-space-sm mb-space-xl"><img alt="Logo CekKontrak" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1VHngLZ8sCJuhoEp__23AiyvbMsWjaWsJqR0H6M7CaCatlIp_iHrBwvgUNvtEmqp5CM6-1Kz9J9nrcRBNRj8nNfIcJ5yZaYu02JmSWdFVo6JV_p0DoNvxGvA_7FWDUZWUH7v-lcBhJxA8GZbc4r3Vj_cvSTxJlV0JSyyqIoVLZAhCAPrnZLm6S1SCxRrPclNxEBNqLw2lqRJwHs78CvQ5wOH7lcuKFlPqw1gjDxLk34MxsP21tNq9Xtxw"/><div class="flex flex-col"><span class="font-headline-md text-headline-md text-on-surface leading-tight">CekKontrak</span><span class="font-label-sm text-label-sm text-secondary font-semibold">Workspace AI</span></div></div><div class="px-space-md mb-space-md"><a class="w-full flex items-center justify-center gap-space-xs py-space-sm px-space-md bg-secondary hover:bg-on-secondary-fixed-variant text-on-secondary font-label-md text-label-md rounded-lg shadow-sm transition-all" data-path="unggah-baru" href="#"><span class="material-symbols-outlined text-[18px]">add_circle</span><span>Unggah Dokumen</span></a></div><nav class="flex flex-col gap-space-xs px-space-md" data-active-classes="bg-surface-container text-on-surface font-semibold rounded-lg"><a aria-current="page" class="flex items-center gap-space-sm px-space-md py-space-sm transition-colors bg-surface-container text-on-surface font-semibold rounded-lg" data-path="workspace" href="#"><span class="material-symbols-outlined text-[20px]">analytics</span><span>Ringkasan AI</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-colors font-body-default text-body-default" data-path="riwayat-analisis" href="#"><span class="material-symbols-outlined text-[20px]">folder_open</span><span>Riwayat Analisis</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-colors font-body-default text-body-default" data-path="daftar-klausul" href="#"><span class="material-symbols-outlined text-[20px]">gavel</span><span>Katalog Klausul</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-lg text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-colors font-body-default text-body-default" data-path="panduan-hukum" href="#"><span class="material-symbols-outlined text-[20px]">help_center</span><span>Panduan Awam</span></a></nav></div><div class="px-space-md"><div class="bg-surface-container-low p-space-md rounded-xl"><div class="flex items-center gap-space-xs text-secondary font-label-md text-label-md mb-space-xs"><span class="material-symbols-outlined text-[16px]">verified_user</span><span>Tingkat Perlindungan</span></div><p class="font-label-sm text-label-sm text-on-surface-variant leading-snug">Didukung standar UU Ketenagakerjaan &amp; perlindungan hak cipta pekerja kreatif.</p></div></div></aside><div class="pl-64"><header class="fixed top-0 left-64 right-0 h-16 bg-surface-container-lowest/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 flex items-center justify-between px-space-lg"><div class="flex items-center gap-space-sm font-body-sm text-body-sm text-on-surface-variant"><span class="material-symbols-outlined text-secondary text-[18px]">description</span><span class="font-medium text-on-surface">Kontrak_Kerja_PKWT_2025.pdf</span><span class="text-outline-variant">/</span><span class="inline-flex items-center px-space-xs py-0.5 rounded-full font-label-sm text-label-sm bg-secondary-container/40 text-on-secondary-container">Selesai Dianalisis</span></div><div class="flex items-center gap-space-md"><button class="p-space-xs text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-lg transition-colors relative" type="button"><span class="material-symbols-outlined text-[22px]">notifications</span><span class="absolute top-1 right-1 w-2 h-2 bg-error rounded-full"></span></button><div class="flex items-center gap-space-sm pl-space-sm"><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBseDdjy83Mqp5siTWLBLds3Fjs7QBr1OjzzhTH5zfBiRAOA4E5TAZTx-cr3NgN74oEF0IHNx1nIreU2Z7H37amUzrRDzvvSjj3u9R4XXoH0KSz0GDXrNz0LgEHrlo3sGbGOPOUtqMd2LXoY1bLeFT3LeTbFX3EqZ1Jxu2VFlbggH60HrOPe49Zbv3ytXwZq127A-AeUKX3tb-xZF3bTTDvJFxvuDEBCQjoWL5ZGkm_0E6l6LocOdxN"/><div class="hidden sm:flex flex-col text-left"><span class="font-label-md text-label-md text-on-surface leading-none">Sarah A.</span><span class="font-label-sm text-label-sm text-on-surface-variant leading-none mt-1">Freelance Designer</span></div></div></div></header><main class="relative pt-16 bg-surface min-h-[calc(100vh-80px)]"><div class="flex flex-col w-full">
+<div class="p-space-lg max-w-[1560px] mx-auto w-full space-y-space-lg">
+<!-- Top Document Meta Header -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm flex flex-col xl:flex-row xl:items-center justify-between gap-space-md">
+<div class="space-y-space-xs">
+<div class="flex flex-wrap items-center gap-space-xs font-label-sm text-label-sm text-on-surface-variant">
+<span class="px-space-xs py-0.5 rounded-full bg-secondary-container/50 text-on-secondary-container font-semibold uppercase tracking-wider">Sewa Properti</span>
+<span class="text-outline-variant">•</span>
+<span>Dianalisis: 24 Okt 2024, 14:30 WIB</span>
+<span class="text-outline-variant">•</span>
+<span class="flex items-center gap-0.5"><span class="material-symbols-outlined text-[15px]">auto_stories</span> 14 Halaman / 12 Pasal</span>
+<span class="text-outline-variant">•</span>
+<span class="text-secondary font-medium">Terverifikasi Mesin AI v2.4</span>
+</div>
+<div class="flex items-center gap-space-sm">
+<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Perjanjian Sewa Kos Paviliun Dago</h1>
+<span class="inline-flex items-center gap-1 px-space-xs py-0.5 rounded bg-surface-container text-on-surface-variant font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[14px]">lock</span> Read-Only
+          </span>
+</div>
+</div>
+<!-- Action Group -->
+<div class="flex flex-wrap items-center gap-space-xs">
+<button class="inline-flex items-center gap-space-xs px-space-md py-space-sm rounded-lg bg-surface-container-low hover:bg-surface-container text-on-surface font-label-md text-label-md transition-colors" id="btn-export-pdf" type="button">
+<span class="material-symbols-outlined text-[18px]">download</span>
+<span>Ekspor Ringkasan (PDF)</span>
+</button>
+<button class="inline-flex items-center gap-space-xs px-space-md py-space-sm rounded-lg bg-primary-container text-on-primary-fixed hover:bg-inverse-surface font-label-md text-label-md transition-colors shadow-sm" id="btn-ask-ai" type="button">
+<span class="material-symbols-outlined text-[18px] text-secondary-container">forum</span>
+<span>Tanya AI Kontrak</span>
+</button>
+<button class="inline-flex items-center gap-space-xs px-space-md py-space-sm rounded-lg bg-secondary text-on-secondary hover:bg-on-secondary-fixed-variant font-label-md text-label-md shadow-sm transition-colors" id="btn-save-doc" type="button">
+<span class="material-symbols-outlined text-[18px]">bookmark_added</span>
+<span>Simpan ke Akun</span>
+</button>
+</div>
+</div>
+<!-- Overall Risk Assessment Banner (Bento Metric Layout) -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-stretch">
+<!-- Score & Status Indicator -->
+<div class="lg:col-span-4 bg-surface-container-low rounded-xl p-space-lg flex flex-col justify-between relative overflow-hidden">
+<div class="flex items-start justify-between">
+<div class="space-y-1">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider font-semibold">Tingkat Risiko Kontrak</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Hasil evaluasi kewajaran perdata</p>
+</div>
+<span class="inline-flex items-center gap-1 px-space-sm py-1 rounded-full bg-error-container text-on-error-container font-label-md text-label-md">
+<span class="material-symbols-outlined text-[14px]">report_problem</span>
+<span>PERLU DITINJAU</span>
+</span>
+</div>
+<div class="my-space-md flex items-baseline gap-space-xs">
+<span class="font-headline-xl text-headline-xl text-on-surface tracking-tight font-bold">68</span>
+<span class="font-headline-md text-headline-md text-on-surface-variant">/ 100</span>
+<span class="ml-space-sm font-label-sm text-label-sm text-error bg-error-container/40 px-space-xs py-0.5 rounded">Rentan Sengketa</span>
+</div>
+<!-- Gauge Indicator Minimal SVG -->
+<div class="space-y-space-xs">
+<div class="w-full bg-surface-container-high h-2.5 rounded-full overflow-hidden flex">
+<div class="bg-error h-full" style="width: 35%"></div>
+<div class="bg-[#d97706] h-full" style="width: 30%"></div>
+<div class="bg-secondary h-full" style="width: 35%"></div>
+</div>
+<div class="flex justify-between font-label-sm text-label-sm text-on-surface-variant">
+<span>0 (Kritis)</span>
+<span>Ambang Toleransi</span>
+<span>100 (Aman)</span>
+</div>
+</div>
+</div>
+<!-- Plain Language Executive Summary -->
+<div class="lg:col-span-8 flex flex-col justify-between space-y-space-md">
+<div class="space-y-space-xs">
+<div class="flex items-center gap-space-xs text-secondary font-label-md text-label-md">
+<span class="material-symbols-outlined text-[18px]">psychology</span>
+<span>Kesimpulan Awam dari AI CekKontrak</span>
+</div>
+<p class="font-body-legal text-body-legal text-on-surface leading-relaxed">
+              Kontrak ini secara umum terstruktur baik, namun memiliki <strong class="text-error font-semibold">2 pasal dengan risiko tinggi</strong> terkait denda pembatalan sepihak dan penahanan deposit tanpa batas waktu yang jelas. Disarankan meminta revisi pada <span class="px-1.5 py-0.5 rounded bg-error-container text-on-error-container font-semibold">Pasal 5</span> dan <span class="px-1.5 py-0.5 rounded bg-error-container text-on-error-container font-semibold">Pasal 8</span> sebelum membubuhkan tanda tangan.
+            </p>
+</div>
+<!-- 3 Micro Metric Cards -->
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-space-md pt-space-xs">
+<!-- Card 1: Red -->
+<div class="bg-[#FFF1F2] rounded-xl p-space-md flex items-center justify-between shadow-sm">
+<div class="space-y-0.5">
+<span class="font-label-sm text-label-sm text-[#9F1239] font-bold">Risiko Tinggi</span>
+<p class="font-headline-md text-headline-md text-[#9F1239] font-bold">2 Pasal</p>
+<span class="font-label-sm text-label-sm text-[#9F1239]/80">Pasal 5, Pasal 8</span>
+</div>
+<div class="w-10 h-10 rounded-full bg-[#FECDD3] flex items-center justify-center text-[#9F1239]">
+<span class="material-symbols-outlined text-[22px]">warning</span>
+</div>
+</div>
+<!-- Card 2: Yellow -->
+<div class="bg-[#FFFBEB] rounded-xl p-space-md flex items-center justify-between shadow-sm">
+<div class="space-y-0.5">
+<span class="font-label-sm text-label-sm text-[#92400E] font-bold">Perlu Perhatian</span>
+<p class="font-headline-md text-headline-md text-[#92400E] font-bold">3 Pasal</p>
+<span class="font-label-sm text-label-sm text-[#92400E]/80">Pasal 3, 7, 10</span>
+</div>
+<div class="w-10 h-10 rounded-full bg-[#FDE68A] flex items-center justify-center text-[#92400E]">
+<span class="material-symbols-outlined text-[22px]">info</span>
+</div>
+</div>
+<!-- Card 3: Green -->
+<div class="bg-[#ECFDF5] rounded-xl p-space-md flex items-center justify-between shadow-sm">
+<div class="space-y-0.5">
+<span class="font-label-sm text-label-sm text-[#065F46] font-bold">Risiko Rendah</span>
+<p class="font-headline-md text-headline-md text-[#065F46] font-bold">7 Pasal</p>
+<span class="font-label-sm text-label-sm text-[#065F46]/80">Standar Hukum</span>
+</div>
+<div class="w-10 h-10 rounded-full bg-[#A7F3D0] flex items-center justify-center text-[#065F46]">
+<span class="material-symbols-outlined text-[22px]">check_circle</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Main Content Area: Split 2-Column (Nav Clause vs Deep Dive) -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-start">
+<!-- Left Column: Clause Navigation & Filter (5 cols desktop) -->
+<div class="lg:col-span-5 bg-surface-container-lowest rounded-xl p-space-md shadow-sm space-y-space-md">
+<!-- Search and Filter Bar -->
+<div class="space-y-space-sm">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-2.5 text-on-surface-variant text-[20px]">search</span>
+<input class="w-full bg-surface-container-low pl-10 pr-4 py-2 rounded-lg font-body-default text-body-default text-on-surface placeholder:text-outline focus:outline-none focus:bg-surface-container-lowest focus:shadow-sm transition-all" id="clause-search" placeholder="Cari nomor pasal atau kata kunci..." type="text"/>
+</div>
+<!-- Filter Pills -->
+<div class="flex items-center gap-space-xs overflow-x-auto pb-1 scrollbar-none font-label-md text-label-md">
+<button class="filter-pill px-space-sm py-1 rounded-full bg-on-surface text-surface whitespace-nowrap" data-filter="all">Semua (12)</button>
+<button class="filter-pill px-space-sm py-1 rounded-full bg-[#FFF1F2] text-[#9F1239] hover:bg-[#FECDD3] whitespace-nowrap transition-colors" data-filter="red">Merah (2)</button>
+<button class="filter-pill px-space-sm py-1 rounded-full bg-[#FFFBEB] text-[#92400E] hover:bg-[#FDE68A] whitespace-nowrap transition-colors" data-filter="yellow">Kuning (3)</button>
+<button class="filter-pill px-space-sm py-1 rounded-full bg-[#ECFDF5] text-[#065F46] hover:bg-[#A7F3D0] whitespace-nowrap transition-colors" data-filter="green">Hijau (7)</button>
+</div>
+<div class="flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm pt-space-xs px-1">
+<span>Menampilkan 5 klausul tersorot</span>
+<button class="flex items-center gap-0.5 hover:text-on-surface transition-colors">
+<span>Urutkan: Tingkat Risiko</span>
+<span class="material-symbols-outlined text-[14px]">arrow_drop_down</span>
+</button>
+</div>
+</div>
+<!-- Navigable Clause List -->
+<div class="space-y-space-xs" id="clause-list-container">
+<!-- Pasal 5 (Active Selected) -->
+<div class="clause-item p-space-md rounded-xl bg-surface-container cursor-pointer transition-all relative overflow-hidden group shadow-sm" data-id="pasal-5" data-risk="red">
+<div class="absolute left-0 top-0 bottom-0 w-1.5 bg-[#9F1239]"></div>
+<div class="flex items-start justify-between gap-space-sm pl-1">
+<div class="space-y-1">
+<div class="flex items-center gap-space-xs">
+<span class="font-title-sm text-title-sm text-on-surface">Pasal 5: Pengakhiran Sewa</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-1">Kewajiban pelunasan penuh meski sewa dihentikan lebih awal.</p>
+</div>
+<span class="shrink-0 px-space-xs py-0.5 rounded-full bg-[#FFF1F2] text-[#9F1239] font-label-sm text-label-sm flex items-center gap-1 font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-[#9F1239]"></span>
+                Berisiko
+              </span>
+</div>
+</div>
+<!-- Pasal 8 -->
+<div class="clause-item p-space-md rounded-xl bg-surface-container-lowest hover:bg-surface-container-low cursor-pointer transition-all relative overflow-hidden group" data-id="pasal-8" data-risk="red">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-[#9F1239] opacity-40 group-hover:opacity-100 transition-opacity"></div>
+<div class="flex items-start justify-between gap-space-sm pl-1">
+<div class="space-y-1">
+<div class="flex items-center gap-space-xs">
+<span class="font-title-sm text-title-sm text-on-surface">Pasal 8: Ketentuan Uang Deposit</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-1">Deposit ditahan tanpa kepastian tanggal pengembalian tertulis.</p>
+</div>
+<span class="shrink-0 px-space-xs py-0.5 rounded-full bg-[#FFF1F2] text-[#9F1239] font-label-sm text-label-sm flex items-center gap-1 font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-[#9F1239]"></span>
+                Berisiko
+              </span>
+</div>
+</div>
+<!-- Pasal 3 -->
+<div class="clause-item p-space-md rounded-xl bg-surface-container-lowest hover:bg-surface-container-low cursor-pointer transition-all relative overflow-hidden group" data-id="pasal-3" data-risk="yellow">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-[#d97706] opacity-40 group-hover:opacity-100 transition-opacity"></div>
+<div class="flex items-start justify-between gap-space-sm pl-1">
+<div class="space-y-1">
+<div class="flex items-center gap-space-xs">
+<span class="font-title-sm text-title-sm text-on-surface">Pasal 3: Kenaikan Biaya Sewa</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-1">Kenaikan sewa sepihak tanpa batasan persentase tahunan.</p>
+</div>
+<span class="shrink-0 px-space-xs py-0.5 rounded-full bg-[#FFFBEB] text-[#92400E] font-label-sm text-label-sm flex items-center gap-1 font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-[#d97706]"></span>
+                Perhatian
+              </span>
+</div>
+</div>
+<!-- Pasal 7 -->
+<div class="clause-item p-space-md rounded-xl bg-surface-container-lowest hover:bg-surface-container-low cursor-pointer transition-all relative overflow-hidden group" data-id="pasal-7" data-risk="yellow">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-[#d97706] opacity-40 group-hover:opacity-100 transition-opacity"></div>
+<div class="flex items-start justify-between gap-space-sm pl-1">
+<div class="space-y-1">
+<div class="flex items-center gap-space-xs">
+<span class="font-title-sm text-title-sm text-on-surface">Pasal 7: Perbaikan Fasilitas</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-1">Beban perbaikan struktural gedung dibebankan ke penyewa.</p>
+</div>
+<span class="shrink-0 px-space-xs py-0.5 rounded-full bg-[#FFFBEB] text-[#92400E] font-label-sm text-label-sm flex items-center gap-1 font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-[#d97706]"></span>
+                Perhatian
+              </span>
+</div>
+</div>
+<!-- Pasal 1 -->
+<div class="clause-item p-space-md rounded-xl bg-surface-container-lowest hover:bg-surface-container-low cursor-pointer transition-all relative overflow-hidden group" data-id="pasal-1" data-risk="green">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-secondary opacity-40 group-hover:opacity-100 transition-opacity"></div>
+<div class="flex items-start justify-between gap-space-sm pl-1">
+<div class="space-y-1">
+<div class="flex items-center gap-space-xs">
+<span class="font-title-sm text-title-sm text-on-surface">Pasal 1: Objek &amp; Jangka Waktu Sewa</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-1">Ketentuan identitas unit kos dan durasi kontrak standar aman.</p>
+</div>
+<span class="shrink-0 px-space-xs py-0.5 rounded-full bg-[#ECFDF5] text-[#065F46] font-label-sm text-label-sm flex items-center gap-1 font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+                Aman
+              </span>
+</div>
+</div>
+</div>
+<div class="p-space-sm rounded-lg bg-surface-container-low text-center">
+<p class="font-label-sm text-label-sm text-on-surface-variant">+ 7 pasal standar lainnya berstatus aman dan terlindungi regulasi umum.</p>
+</div>
+</div>
+<!-- Right Column: Active Clause Detail (Pasal 5) (7 cols desktop) -->
+<div class="lg:col-span-7 space-y-space-md">
+<!-- Active Clause Card Container -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm space-y-space-lg">
+<!-- Header of Clause -->
+<div class="flex flex-wrap items-center justify-between gap-space-sm">
+<div class="space-y-0.5">
+<div class="flex items-center gap-2">
+<span class="font-headline-md text-headline-md text-on-surface">Pasal 5 — Pengakhiran Sewa</span>
+<span class="px-space-xs py-0.5 rounded bg-surface-container text-on-surface-variant font-label-sm text-label-sm">Halaman 4</span>
+</div>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Topik: Terminasi Dini &amp; Tanggung Jawab Finansial</p>
+</div>
+<div class="flex items-center gap-space-xs">
+<span class="inline-flex items-center gap-1.5 px-space-md py-1 rounded-full bg-[#FFF1F2] text-[#9F1239] font-label-md text-label-md font-semibold">
+<span class="material-symbols-outlined text-[16px]">dangerous</span>
+<span>MERAH · Berisiko Tinggi</span>
+</span>
+</div>
+</div>
+<!-- Section 1: Teks Asli Kontrak -->
+<div class="space-y-space-xs">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs text-on-surface-variant font-label-sm text-label-sm uppercase tracking-wider font-semibold">
+<span class="material-symbols-outlined text-[16px]">menu_book</span>
+<span>Teks Asli Kontrak (Dokumen Sumber)</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Kutipan Pasal 5 Ayat 2</span>
+</div>
+<div class="bg-surface-container-low rounded-xl p-space-md relative overflow-hidden">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-[#9F1239]"></div>
+<blockquote class="font-body-legal text-body-legal text-on-surface italic pl-space-sm leading-relaxed">
+                “Penyewa yang mengakhiri masa sewa sebelum jangka waktu berakhir tetap wajib membayar seluruh sisa biaya sewa selama sisa masa kontrak.”
+              </blockquote>
+</div>
+</div>
+<!-- Section 2: Mengapa ini berisiko? -->
+<div class="bg-[#FFF1F2] rounded-xl p-space-md space-y-space-xs">
+<div class="flex items-center gap-space-xs text-[#9F1239] font-label-md text-label-md font-bold">
+<span class="material-symbols-outlined text-[18px]">gpp_maybe</span>
+<span>Mengapa Klausul Ini Sangat Berisiko?</span>
+</div>
+<p class="font-body-default text-body-default text-[#9F1239] leading-relaxed">
+              Klausul ini memberatkan penyewa secara sepihak. Jika Anda harus pindah mendadak karena alasan darurat/pekerjaan, Anda tetap dipaksa membayar berbulan-bulan biaya sewa padahal kamar sudah tidak digunakan dan pemilik dapat menyewakannya kembali ke orang lain (<span class="font-bold underline">potensi double profit bagi pemilik kos</span>).
+            </p>
+</div>
+<!-- Section 3: Penjelasan Bahasa Sederhana -->
+<div class="bg-surface-container rounded-xl p-space-md space-y-space-xs">
+<div class="flex items-center gap-space-xs text-secondary font-label-md text-label-md font-bold">
+<span class="material-symbols-outlined text-[18px]">record_voice_over</span>
+<span>Penjelasan Bahasa Sederhana (Bahasa Manusia)</span>
+</div>
+<div class="flex items-start gap-space-sm text-on-surface font-body-default text-body-default">
+<span class="material-symbols-outlined text-secondary text-[22px] shrink-0 mt-0.5">chat_bubble</span>
+<p class="leading-relaxed">
+                “Kalau kamu keluar lebih cepat sebelum kontrak selesai, kamu tetap harus bayar uang sewa sampai bulan terakhir.”
+              </p>
+</div>
+</div>
+<!-- Section 4: Rekomendasi Draf Revisi Lebih Adil -->
+<div class="space-y-space-sm bg-surface-container-low rounded-xl p-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs text-on-surface font-label-md text-label-md font-bold">
+<span class="material-symbols-outlined text-secondary text-[18px]">edit_note</span>
+<span>Rekomendasi Draf Revisi Lebih Adil</span>
+</div>
+<span class="font-label-sm text-label-sm text-secondary bg-secondary-container/40 px-space-xs py-0.5 rounded font-semibold">Saran Legal AI</span>
+</div>
+<div class="bg-surface-container-lowest p-space-md rounded-lg font-body-legal text-body-legal text-on-surface shadow-sm">
+<p class="leading-relaxed" id="revisi-text">
+                “Pengakhiran sewa lebih awal oleh Penyewa dikenakan denda proporsional maksimal sebesar 1 (satu) bulan biaya sewa berjalan, serta deposit dikembalikan setelah dipotong kewajiban utilitas yang belum terbayar.”
+              </p>
+</div>
+<!-- Action Buttons for Draft -->
+<div class="flex flex-wrap items-center gap-space-sm pt-space-xs">
+<button class="inline-flex items-center gap-space-xs px-space-md py-space-sm rounded-lg bg-secondary text-on-secondary hover:bg-on-secondary-fixed-variant font-label-md text-label-md shadow-sm transition-all active:scale-95" id="copy-revision-btn" type="button">
+<span class="material-symbols-outlined text-[18px]" id="copy-icon">content_copy</span>
+<span id="copy-label">Salin Saran Revisi</span>
+</button>
+<button class="inline-flex items-center gap-space-xs px-space-md py-space-sm rounded-lg bg-surface-container-lowest hover:bg-surface-container text-on-surface font-label-md text-label-md shadow-sm transition-colors" id="ask-owner-btn" type="button">
+<span class="material-symbols-outlined text-[18px] text-secondary">send</span>
+<span>Tanyakan ke Pemilik Kos</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Action Panel Tabs & Interactive Negotiation Tools -->
+<div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm space-y-space-md">
+<!-- Tabs Navigation -->
+<div class="flex items-center gap-space-lg">
+<button class="font-label-md text-label-md pb-space-sm text-secondary font-semibold transition-all relative" id="tab-questions-btn">
+              Pertanyaan Negosiasi Sebelum Tanda Tangan
+              <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-secondary rounded-full"></div>
+</button>
+<button class="font-label-md text-label-md pb-space-sm text-on-surface-variant hover:text-on-surface font-medium transition-all" id="tab-compare-btn">
+              Bandingkan Teks Asli vs Revisi
+            </button>
+</div>
+<!-- Tab Content: Questions -->
+<div class="space-y-space-sm" id="tab-questions-content">
+<p class="font-body-sm text-body-sm text-on-surface-variant">Ajukan daftar pertanyaan sopan ini ke pemilik kos melalui WhatsApp atau tatap muka:</p>
+<div class="space-y-space-xs">
+<div class="p-space-sm rounded-lg bg-surface-container-low flex items-start gap-space-sm group hover:bg-surface-container transition-colors">
+<span class="w-6 h-6 rounded-full bg-secondary-container text-on-secondary-container font-label-sm text-label-sm font-bold flex items-center justify-center shrink-0 mt-0.5">1</span>
+<div class="space-y-0.5 flex-1">
+<p class="font-body-default text-body-default text-on-surface font-medium">Apakah denda pengakhiran sewa dapat disesuaikan jika ada alasan darurat medis atau perpindahan dinas kantor mendadak?</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Tujuan: Menghindari beban denda 100% untuk force majeure.</p>
+</div>
+<button class="copy-q-btn text-on-surface-variant hover:text-secondary p-1" data-text="Apakah denda pengakhiran sewa dapat disesuaikan jika ada alasan darurat medis atau perpindahan dinas kantor mendadak?" type="button">
+<span class="material-symbols-outlined text-[18px]">copy_all</span>
+</button>
+</div>
+<div class="p-space-sm rounded-lg bg-surface-container-low flex items-start gap-space-sm group hover:bg-surface-container transition-colors">
+<span class="w-6 h-6 rounded-full bg-secondary-container text-on-secondary-container font-label-sm text-label-sm font-bold flex items-center justify-center shrink-0 mt-0.5">2</span>
+<div class="space-y-0.5 flex-1">
+<p class="font-body-default text-body-default text-on-surface font-medium">Bagaimana bila saya mencarikan penyewa pengganti (sub-tenant) sebelum masa sewa berakhir, apakah bebas penalti penuh?</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Tujuan: Memberikan alternatif solusi tanpa merugikan pemilik kos.</p>
+</div>
+<button class="copy-q-btn text-on-surface-variant hover:text-secondary p-1" data-text="Bagaimana bila saya mencarikan penyewa pengganti (sub-tenant) sebelum masa sewa berakhir, apakah bebas penalti penuh?" type="button">
+<span class="material-symbols-outlined text-[18px]">copy_all</span>
+</button>
+</div>
+<div class="p-space-sm rounded-lg bg-surface-container-low flex items-start gap-space-sm group hover:bg-surface-container transition-colors">
+<span class="w-6 h-6 rounded-full bg-secondary-container text-on-secondary-container font-label-sm text-label-sm font-bold flex items-center justify-center shrink-0 mt-0.5">3</span>
+<div class="space-y-0.5 flex-1">
+<p class="font-body-default text-body-default text-on-surface font-medium">Berapa batas waktu paling lambat pengembalian uang deposit setelah kunci diserahkan dan inspeksi unit selesai?</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Tujuan: Memastikan kepastian waktu pencairan deposit (Pasal 8).</p>
+</div>
+<button class="copy-q-btn text-on-surface-variant hover:text-secondary p-1" data-text="Berapa batas waktu paling lambat pengembalian uang deposit setelah kunci diserahkan dan inspeksi unit selesai?" type="button">
+<span class="material-symbols-outlined text-[18px]">copy_all</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Tab Content: Compare (Initially Hidden) -->
+<div class="hidden space-y-space-md" id="tab-compare-content">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-md">
+<div class="bg-[#FFF1F2] p-space-md rounded-xl space-y-space-xs">
+<span class="font-label-sm text-label-sm text-[#9F1239] font-bold uppercase tracking-wider">Klausul Asli (Ketat / Sepihak)</span>
+<p class="font-body-legal text-body-legal text-[#9F1239] line-through leading-relaxed">
+                  Penyewa yang mengakhiri masa sewa sebelum jangka waktu berakhir tetap wajib membayar seluruh sisa biaya sewa selama sisa masa kontrak.
+                </p>
+<div class="font-label-sm text-label-sm text-[#9F1239]">Beban biaya: 100% sisa bulan sewa</div>
+</div>
+<div class="bg-[#ECFDF5] p-space-md rounded-xl space-y-space-xs">
+<span class="font-label-sm text-label-sm text-[#065F46] font-bold uppercase tracking-wider">Usulan Revisi Seimbang (Win-Win)</span>
+<p class="font-body-legal text-body-legal text-[#065F46] leading-relaxed">
+                  Pengakhiran sewa lebih awal dikenakan penalti maksimal setara 1 (satu) bulan biaya sewa dengan pemberitahuan tertulis minimal 14 hari sebelumnya.
+                </p>
+<div class="font-label-sm text-label-sm text-[#065F46]">Beban biaya: Maksimal 1 bulan sewa</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Educational Bottom Disclaimer Note -->
+<div class="p-space-md bg-surface-container-low rounded-xl flex items-center justify-between gap-space-md text-on-surface-variant font-label-sm text-label-sm">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-secondary text-[20px] shrink-0">verified</span>
+<span><strong>Pemberitahuan Resmi:</strong> Hasil analisis bersifat edukatif dan referensi negosiasi awam, bukan nasihat hukum tersertifikasi. Periksa kembali isi fisik kontrak sebelum mengambil keputusan final.</span>
+</div>
+<a class="text-secondary font-semibold hover:underline shrink-0 flex items-center gap-1" data-path="panduan-hukum" href="#">
+<span>Pelajari Hak Penyewa</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</a>
+</div>
+</div>
+</div>
+<script>
+  // Tab Switching Logic
+  const tabQuestionsBtn = document.getElementById('tab-questions-btn');
+  const tabCompareBtn = document.getElementById('tab-compare-btn');
+  const tabQuestionsContent = document.getElementById('tab-questions-content');
+  const tabCompareContent = document.getElementById('tab-compare-content');
+
+  if (tabQuestionsBtn && tabCompareBtn) {
+    tabQuestionsBtn.addEventListener('click', () => {
+      tabQuestionsBtn.className = 'font-label-md text-label-md pb-space-sm text-secondary font-semibold transition-all relative';
+      tabQuestionsBtn.innerHTML = 'Pertanyaan Negosiasi Sebelum Tanda Tangan<div class="absolute bottom-0 left-0 right-0 h-0.5 bg-secondary rounded-full"></div>';
+      tabCompareBtn.className = 'font-label-md text-label-md pb-space-sm text-on-surface-variant hover:text-on-surface font-medium transition-all';
+      tabCompareBtn.innerHTML = 'Bandingkan Teks Asli vs Revisi';
+      tabQuestionsContent.classList.remove('hidden');
+      tabCompareContent.classList.add('hidden');
+    });
+
+    tabCompareBtn.addEventListener('click', () => {
+      tabCompareBtn.className = 'font-label-md text-label-md pb-space-sm text-secondary font-semibold transition-all relative';
+      tabCompareBtn.innerHTML = 'Bandingkan Teks Asli vs Revisi<div class="absolute bottom-0 left-0 right-0 h-0.5 bg-secondary rounded-full"></div>';
+      tabQuestionsBtn.className = 'font-label-md text-label-md pb-space-sm text-on-surface-variant hover:text-on-surface font-medium transition-all';
+      tabQuestionsBtn.innerHTML = 'Pertanyaan Negosiasi Sebelum Tanda Tangan';
+      tabCompareContent.classList.remove('hidden');
+      tabQuestionsContent.classList.add('hidden');
+    });
+  }
+
+  // Copy Draft Action
+  const copyBtn = document.getElementById('copy-revision-btn');
+  const copyLabel = document.getElementById('copy-label');
+  const copyIcon = document.getElementById('copy-icon');
+  const revisiText = document.getElementById('revisi-text');
+
+  if (copyBtn && revisiText) {
+    copyBtn.addEventListener('click', () => {
+      navigator.clipboard.writeText(revisiText.innerText.replace(/[“”"]/g, '').trim()).then(() => {
+        copyLabel.textContent = 'Berhasil Disalin!';
+        copyIcon.textContent = 'check';
+        setTimeout(() => {
+          copyLabel.textContent = 'Salin Saran Revisi';
+          copyIcon.textContent = 'content_copy';
+        }, 2200);
+      });
+    });
+  }
+
+  // Copy Single Question
+  document.querySelectorAll('.copy-q-btn').forEach(button => {
+    button.addEventListener('click', () => {
+      const textToCopy = button.getAttribute('data-text');
+      if (textToCopy) {
+        navigator.clipboard.writeText(textToCopy).then(() => {
+          const icon = button.querySelector('.material-symbols-outlined');
+          if (icon) {
+            icon.textContent = 'done';
+            setTimeout(() => { icon.textContent = 'copy_all'; }, 1800);
+          }
+        });
+      }
+    });
+  });
+
+  // Clause Filter Buttons
+  const filterPills = document.querySelectorAll('.filter-pill');
+  const clauseItems = document.querySelectorAll('.clause-item');
+
+  filterPills.forEach(pill => {
+    pill.addEventListener('click', () => {
+      filterPills.forEach(p => {
+        p.className = 'filter-pill px-space-sm py-1 rounded-full bg-surface-container-low text-on-surface-variant hover:bg-surface-container whitespace-nowrap transition-colors';
+      });
+      pill.className = 'filter-pill px-space-sm py-1 rounded-full bg-on-surface text-surface whitespace-nowrap';
+      
+      const filter = pill.getAttribute('data-filter');
+      clauseItems.forEach(item => {
+        const itemRisk = item.getAttribute('data-risk');
+        if (filter === 'all' || itemRisk === filter) {
+          item.classList.remove('hidden');
+        } else {
+          item.classList.add('hidden');
+        }
+      });
+    });
+  });
+
+  // Search Clause Logic
+  const searchInput = document.getElementById('clause-search');
+  if (searchInput) {
+    searchInput.addEventListener('input', (e) => {
+      const query = e.target.value.toLowerCase();
+      clauseItems.forEach(item => {
+        const text = item.textContent.toLowerCase();
+        if (text.includes(query)) {
+          item.classList.remove('hidden');
+        } else {
+          item.classList.add('hidden');
+        }
+      });
+    });
+  }
+
+  // Ask Owner Trigger
+  const askOwnerBtn = document.getElementById('ask-owner-btn');
+  if (askOwnerBtn) {
+    askOwnerBtn.addEventListener('click', () => {
+      const message = "Halo Pak/Bu pemilik Kos Paviliun Dago, terkait klausul Pasal 5 di draf kontrak sewa, apakah memungkinkan jika poin denda terminasi disesuaikan menjadi proporsional 1 bulan sewa? Mohon pertimbangannya. Terima kasih.";
+      navigator.clipboard.writeText(message).then(() => {
+        alert("Template pesan WhatsApp sopan untuk pemilik kos telah disalin ke clipboard!");
+      });
+    });
+  }
+</script></main><footer class="w-full bg-surface-container-lowest py-space-md px-space-lg shadow-[0_-1px_4px_rgba(0,0,0,0.02)]"><div class="flex flex-col md:flex-row items-center justify-between gap-space-sm text-on-surface-variant font-label-sm text-label-sm"><p class="text-center md:text-left">CekKontrak menyediakan analisis edukatif dan bukan pengganti nasihat hukum profesional.</p><div class="flex items-center gap-space-md"><a class="hover:text-on-surface transition-colors" data-path="kebijakan-privasi" href="#">Privasi</a><a class="hover:text-on-surface transition-colors" data-path="syarat-layanan" href="#">Syarat Layanan</a><a class="hover:text-on-surface transition-colors" data-path="panduan-hukum" href="#">Bantuan</a></div></div></footer></div></body></html>
