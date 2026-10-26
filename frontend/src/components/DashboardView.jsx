@@ -1,345 +1,329 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 
 export default function DashboardView({ doc, onOpenChat, onNewAnalysis, onCopy }) {
-  const [filter, setFilter] = useState('all');
+  const [filter, setFilter] = useState('all'); // 'all', 'merah', 'kuning', 'hijau'
+
+  // Sort clauses: Berisiko (merah) -> Perlu teliti (kuning) -> Aman (hijau)
+  const sortedClauses = useMemo(() => {
+    if (!doc?.clauses) return [];
+    const priority = { merah: 1, kuning: 2, hijau: 3 };
+    return [...doc.clauses].sort((a, b) => {
+      const pA = priority[a.level] || 4;
+      const pB = priority[b.level] || 4;
+      if (pA !== pB) return pA - pB;
+      return (parseInt(a.nomor_pasal, 10) || 0) - (parseInt(b.nomor_pasal, 10) || 0);
+    });
+  }, [doc]);
+
+  // Accordion state: Berisiko (merah) open by default, others closed
+  const [openMap, setOpenMap] = useState(() => {
+    const initial = {};
+    if (doc?.clauses) {
+      doc.clauses.forEach((c) => {
+        if (c.level === 'merah') {
+          initial[c.nomor_pasal] = true;
+        }
+      });
+    }
+    return initial;
+  });
+
+  const toggleAccordion = (num) => {
+    setOpenMap((prev) => ({ ...prev, [num]: !prev[num] }));
+  };
 
   if (!doc) return null;
 
-  const filteredClauses = (doc.clauses || []).filter(c => {
+  const filteredClauses = sortedClauses.filter((c) => {
     if (filter === 'all') return true;
     return c.level === filter;
   });
 
-  const isRedScore = doc.overall_score >= 60;
-  const isYellowScore = doc.overall_score >= 35 && doc.overall_score < 60;
+  // Risk styling tokens per design.md
+  const getRiskMeta = (level) => {
+    if (level === 'merah') {
+      return { dot: 'bg-rose-500', text: 'text-rose-700', label: 'Berisiko' };
+    }
+    if (level === 'kuning') {
+      return { dot: 'bg-amber-500', text: 'text-amber-700', label: 'Perlu teliti' };
+    }
+    return { dot: 'bg-emerald-500', text: 'text-emerald-700', label: 'Aman' };
+  };
 
-  const filterButtons = [
-    { key: 'all', label: `Semua (${doc.clauses?.length || 0})`, activeClass: 'bg-slate-900 text-white', inactiveClass: 'bg-white text-slate-600 hover:text-slate-900 border border-slate-200' },
-    { key: 'merah', label: `🔴 Berisiko (${doc.counts?.merah || 0})`, activeClass: 'bg-rose-600 text-white', inactiveClass: 'bg-white text-rose-700 hover:bg-rose-50 border border-rose-200' },
-    { key: 'kuning', label: `🟡 Perlu Teliti (${doc.counts?.kuning || 0})`, activeClass: 'bg-amber-600 text-white', inactiveClass: 'bg-white text-amber-800 hover:bg-amber-50 border border-amber-200' },
-    { key: 'hijau', label: `🟢 Aman (${doc.counts?.hijau || 0})`, activeClass: 'bg-emerald-600 text-white', inactiveClass: 'bg-white text-emerald-800 hover:bg-emerald-50 border border-emerald-200' },
-  ];
+  // Score bar color
+  const score = doc.overall_score || 0;
+  let scoreBarColor = 'bg-emerald-500';
+  if (score >= 60) scoreBarColor = 'bg-rose-500';
+  else if (score >= 35) scoreBarColor = 'bg-amber-500';
 
   return (
-    <div className="py-4 max-w-7xl mx-auto w-full space-y-5">
-
-      {/* Top Document Meta Header */}
-      <div className="bg-white rounded-2xl p-5 sm:p-6 shadow-xs border border-slate-200/80">
-        <div className="flex flex-col gap-4">
-          {/* Meta Row */}
-          <div className="flex flex-wrap items-center gap-2 font-label-sm text-xs text-slate-500">
-            <span className="px-2.5 py-0.5 rounded-full bg-teal-50 text-teal-800 font-bold uppercase tracking-wider border border-teal-200/60">
-              {doc.contract_type || 'Perjanjian'}
-            </span>
-            <span className="text-slate-300">•</span>
-            <span>Dianalisis: {doc.created_at ? doc.created_at.substring(0, 10) : 'Hari ini'}</span>
-            <span className="text-slate-300">•</span>
-            <span className="flex items-center gap-1">
-              <span className="material-symbols-outlined text-[15px]">auto_stories</span>
-              {doc.clauses ? doc.clauses.length : 0} Pasal
-            </span>
-            {doc.from_cache && (
-              <span className="text-secondary font-bold flex items-center gap-0.5">
-                <span className="material-symbols-outlined text-[14px]">bolt</span>
-                Cache Hash
-              </span>
-            )}
-          </div>
-
-          {/* Title + Action Group */}
-          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
-            <h1 className="font-headline-lg text-xl sm:text-2xl lg:text-3xl text-slate-900 tracking-tight font-extrabold leading-tight">
-              {doc.title}
-            </h1>
-
-            <div className="flex flex-wrap items-center gap-2 shrink-0">
-              <button
-                type="button"
-                onClick={() => window.open(`/api/documents/${doc.document_id}/export`, '_blank')}
-                className="inline-flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200/80 text-slate-800 font-label-md text-xs font-semibold transition-all border border-slate-200 cursor-pointer"
-              >
-                <span className="material-symbols-outlined text-[17px]">download</span>
-                <span className="hidden sm:inline">Ekspor PDF</span>
-                <span className="sm:hidden">Ekspor</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={onOpenChat}
-                className="inline-flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-xl bg-slate-900 text-white hover:bg-slate-800 font-label-md text-xs font-semibold transition-all shadow-sm cursor-pointer"
-              >
-                <span className="material-symbols-outlined text-[17px] text-teal-400">forum</span>
-                <span className="hidden sm:inline">Tanya AI Kontrak</span>
-                <span className="sm:hidden">Tanya AI</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={onNewAnalysis}
-                className="inline-flex items-center gap-1.5 px-3 sm:px-4 py-2 rounded-xl bg-white hover:bg-slate-50 text-slate-700 font-label-md text-xs font-semibold transition-all border border-slate-200 cursor-pointer"
-              >
-                <span className="material-symbols-outlined text-[17px]">add</span>
-                <span className="hidden sm:inline">Kontrak Lain</span>
-                <span className="sm:hidden">Baru</span>
-              </button>
-            </div>
-          </div>
+    <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
+      
+      {/* Header Meta & Title */}
+      <div className="mb-6">
+        <div className="text-xs text-slate-500 mb-1 flex items-center gap-1.5 flex-wrap">
+          <span className="capitalize">{doc.contract_type?.replace('_', ' ') || 'Perjanjian'}</span>
+          <span>·</span>
+          <span>{doc.clauses?.length || 0} pasal</span>
+          <span>·</span>
+          <span>{doc.created_at ? doc.created_at.substring(0, 10) : 'Hari ini'}</span>
         </div>
-      </div>
 
-      {/* Overall Risk Assessment */}
-      <div className="bg-white rounded-2xl p-5 sm:p-6 shadow-xs border border-slate-200/80">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
+        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mt-1">
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight leading-snug">
+            {doc.title}
+          </h1>
 
-          {/* Score & Status Indicator */}
-          <div className="lg:col-span-4 bg-slate-50 rounded-xl p-5 flex flex-col justify-between border border-slate-200/70 gap-4">
-            <div className="flex items-start justify-between">
-              <div className="space-y-0.5">
-                <span className="font-label-sm text-xs text-slate-500 uppercase tracking-wider font-bold">Tingkat Risiko Dokumen</span>
-                <p className="font-body-sm text-xs text-slate-600">Evaluasi bobot pasal hukum</p>
-              </div>
-              <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full font-label-md text-xs font-bold ${
-                isRedScore
-                  ? 'bg-rose-100 text-rose-800 border border-rose-200'
-                  : isYellowScore
-                    ? 'bg-amber-100 text-amber-800 border border-amber-200'
-                    : 'bg-emerald-100 text-emerald-800 border border-emerald-200'
-              }`}>
-                <span className="material-symbols-outlined text-[14px]">report_problem</span>
-                <span>{doc.risk_level?.toUpperCase()}</span>
-              </span>
-            </div>
-
-            <div className="flex items-baseline gap-1">
-              <span className="font-headline-xl text-4xl sm:text-5xl text-slate-900 tracking-tight font-extrabold">{doc.overall_score}</span>
-              <span className="font-headline-md text-xl text-slate-400 font-semibold">/ 100</span>
-              <span className={`ml-2 font-label-sm text-xs px-2 py-0.5 rounded font-bold ${
-                isRedScore ? 'text-rose-700 bg-rose-100' : isYellowScore ? 'text-amber-800 bg-amber-100' : 'text-emerald-800 bg-emerald-100'
-              }`}>
-                {isRedScore ? 'Rentan Sengketa' : isYellowScore ? 'Perlu Teliti' : 'Klausul Standar'}
-              </span>
-            </div>
-
-            <div className="space-y-1.5">
-              <div className="w-full bg-slate-200 h-2.5 rounded-full overflow-hidden flex">
-                <div className="bg-rose-500 h-full transition-all duration-500" style={{ width: `${Math.min((doc.counts?.merah || 0) * 25, 45)}%` }}></div>
-                <div className="bg-amber-500 h-full transition-all duration-500" style={{ width: `${Math.min((doc.counts?.kuning || 0) * 15, 35)}%` }}></div>
-                <div className="bg-emerald-500 h-full transition-all duration-500" style={{ width: '35%' }}></div>
-              </div>
-              <div className="flex justify-between font-label-sm text-[11px] text-slate-500">
-                <span>0 (Kritis)</span>
-                <span>Toleransi</span>
-                <span>100 (Aman)</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Plain Language Executive Summary */}
-          <div className="lg:col-span-8 flex flex-col justify-between gap-4">
-            <div className="space-y-1.5">
-              <div className="flex items-center gap-1.5 text-secondary font-label-md text-xs uppercase font-bold tracking-wider">
-                <span className="material-symbols-outlined text-[18px]">psychology</span>
-                <span>Kesimpulan Awam dari AI CekKontrak:</span>
-              </div>
-              <p className="font-body-legal text-sm text-slate-700 leading-relaxed bg-slate-50 p-4 rounded-xl border border-slate-200/70">
-                {doc.summary}
-              </p>
-            </div>
-
-            {/* 3 Metric Cards */}
-            <div className="grid grid-cols-3 gap-3">
-              <div className="bg-rose-50/70 border border-rose-200/70 rounded-xl p-3 sm:p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 shadow-xs">
-                <div className="space-y-0.5">
-                  <span className="font-label-sm text-xs text-rose-800 font-bold">Risiko Tinggi</span>
-                  <p className="font-headline-md text-xl sm:text-2xl text-rose-800 font-extrabold">{doc.counts?.merah || 0} Pasal</p>
-                  <span className="font-label-sm text-[11px] text-rose-700 font-medium hidden sm:block">Perlu Negosiasi</span>
-                </div>
-                <div className="w-9 h-9 rounded-xl bg-rose-200/70 flex items-center justify-center text-rose-800 shrink-0">
-                  <span className="material-symbols-outlined text-[20px]">warning</span>
-                </div>
-              </div>
-
-              <div className="bg-amber-50/70 border border-amber-200/70 rounded-xl p-3 sm:p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 shadow-xs">
-                <div className="space-y-0.5">
-                  <span className="font-label-sm text-xs text-amber-800 font-bold">Perlu Teliti</span>
-                  <p className="font-headline-md text-xl sm:text-2xl text-amber-800 font-extrabold">{doc.counts?.kuning || 0} Pasal</p>
-                  <span className="font-label-sm text-[11px] text-amber-700 font-medium hidden sm:block">Minta Klarifikasi</span>
-                </div>
-                <div className="w-9 h-9 rounded-xl bg-amber-200/70 flex items-center justify-center text-amber-800 shrink-0">
-                  <span className="material-symbols-outlined text-[20px]">info</span>
-                </div>
-              </div>
-
-              <div className="bg-emerald-50/70 border border-emerald-200/70 rounded-xl p-3 sm:p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 shadow-xs">
-                <div className="space-y-0.5">
-                  <span className="font-label-sm text-xs text-emerald-800 font-bold">Aman</span>
-                  <p className="font-headline-md text-xl sm:text-2xl text-emerald-800 font-extrabold">{doc.counts?.hijau || 0} Pasal</p>
-                  <span className="font-label-sm text-[11px] text-emerald-700 font-medium hidden sm:block">Hak Wajar</span>
-                </div>
-                <div className="w-9 h-9 rounded-xl bg-emerald-200/70 flex items-center justify-center text-emerald-800 shrink-0">
-                  <span className="material-symbols-outlined text-[20px]">check_circle</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </div>
-
-      {/* Filter Tabs Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        {/* Scrollable filter tabs on mobile */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0 -mx-4 sm:mx-0 px-4 sm:px-0">
-          {filterButtons.map(btn => (
+          <div className="flex items-center gap-2 shrink-0">
             <button
-              key={btn.key}
               type="button"
-              onClick={() => setFilter(btn.key)}
-              className={`px-3 sm:px-4 py-2 rounded-xl font-label-md text-xs font-semibold transition-all cursor-pointer shrink-0 ${
-                filter === btn.key ? btn.activeClass : btn.inactiveClass
-              }`}
+              onClick={() => window.open(`/api/documents/${doc.document_id}/export`, '_blank')}
+              className="h-9 px-3 border border-slate-200 hover:bg-slate-50 text-slate-700 rounded text-xs font-medium transition-colors cursor-pointer"
             >
-              {btn.label}
+              Ekspor PDF
             </button>
-          ))}
-          <button
-            type="button"
-            onClick={() => setFilter('questions')}
-            className={`px-3 sm:px-4 py-2 rounded-xl font-label-md text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer shrink-0 ${
-              filter === 'questions'
-                ? 'bg-teal-700 text-white'
-                : 'bg-white text-teal-800 hover:bg-teal-50 border border-teal-200'
-            }`}
-          >
-            <span className="material-symbols-outlined text-[16px]">quiz</span>
-            <span>Pertanyaan ({doc.questions?.length || 0})</span>
-          </button>
+            <button
+              type="button"
+              onClick={onOpenChat}
+              className="h-9 px-3 bg-accent hover:bg-accent-hover text-white rounded text-xs font-medium transition-colors cursor-pointer"
+            >
+              Tanya AI
+            </button>
+          </div>
         </div>
-
-        <span className="font-label-sm text-xs text-slate-500 font-medium shrink-0">
-          {filter === 'questions' ? (doc.questions?.length || 0) : filteredClauses.length} item
-        </span>
       </div>
 
-      {/* Main Content: Clauses List or Questions List */}
-      {filter === 'questions' ? (
-        <div className="bg-white rounded-2xl p-5 sm:p-8 shadow-xs border border-slate-200/80 space-y-4">
-          <div className="space-y-1">
-            <h3 className="font-title-sm text-lg text-slate-900 font-bold">Daftar Pertanyaan Sebelum Tanda Tangan</h3>
-            <p className="font-body-sm text-xs sm:text-sm text-slate-600">
-              Gunakan poin-poin pertanyaan strategis ini saat bernegosiasi dengan pihak pengelola atau perusahaan:
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
-            {doc.questions && doc.questions.map((q, idx) => (
-              <div key={q.id || idx} className="p-4 sm:p-5 rounded-xl bg-slate-50 border border-slate-200/80 space-y-2 shadow-xs hover:border-teal-400 transition-colors">
-                <div className="flex items-center justify-between">
-                  <span className="px-2.5 py-0.5 rounded-full font-label-sm text-xs bg-teal-100 text-teal-900 font-bold">
-                    Pertanyaan {idx + 1}{q.nomor_pasal ? ` • Pasal ${q.nomor_pasal}` : ''}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => onCopy(q.pertanyaan)}
-                    className="text-secondary hover:text-teal-900 font-label-sm text-xs flex items-center gap-1 cursor-pointer font-semibold"
-                  >
-                    <span className="material-symbols-outlined text-[15px]">content_copy</span>
-                    <span>Salin</span>
-                  </button>
-                </div>
-                <p className="font-title-sm text-sm text-slate-900 font-bold">{q.pertanyaan}</p>
-                <p className="font-body-sm text-xs text-slate-600 leading-relaxed">
-                  <strong>Tujuan:</strong> {q.tujuan}
-                </p>
-              </div>
-            ))}
-          </div>
+      {/* Score Block */}
+      <div className="border-t border-slate-200 pt-6 mb-6">
+        <div className="flex items-baseline gap-3">
+          <span className="text-4xl sm:text-5xl font-bold text-slate-900 tabular-nums">
+            {score}
+          </span>
+          <span className="text-xl sm:text-2xl text-slate-400 font-normal">/ 100</span>
+          <span className="text-base sm:text-lg font-semibold text-slate-700 ml-2">
+            {doc.risk_label || (score >= 60 ? 'Rentan Sengketa' : score >= 35 ? 'Perlu Kehati-hatian' : 'Cukup Aman')}
+          </span>
         </div>
-      ) : (
-        /* Clauses List */
-        <div className="space-y-4">
-          {filteredClauses.map((c) => {
-            const isRed = c.level === 'merah';
-            const isYellow = c.level === 'kuning';
-            const borderRibbon = isRed ? 'border-l-4 border-rose-500' : isYellow ? 'border-l-4 border-amber-500' : 'border-l-4 border-emerald-500';
+
+        {/* Thin 4px Progress Bar */}
+        <div className="w-full h-1 bg-slate-200 rounded-full overflow-hidden mt-3 mb-4">
+          <div
+            className={`h-full ${scoreBarColor} transition-all duration-300`}
+            style={{ width: `${Math.min(100, Math.max(0, score))}%` }}
+          />
+        </div>
+
+        {/* AI Summary */}
+        <p className="text-sm text-slate-700 leading-relaxed mb-4">
+          <strong className="font-semibold text-slate-900">Kesimpulan: </strong>
+          {doc.overall_summary}
+        </p>
+
+        {/* 3 Counts as Text with Dots */}
+        <div className="flex flex-wrap items-center gap-4 sm:gap-6 text-xs sm:text-sm font-medium pt-1">
+          <span className="inline-flex items-center gap-1.5 text-rose-700">
+            <span className="w-2 h-2 rounded-full bg-rose-500 inline-block" />
+            <span>{doc.counts?.merah || 0} Berisiko</span>
+          </span>
+          <span className="inline-flex items-center gap-1.5 text-amber-700">
+            <span className="w-2 h-2 rounded-full bg-amber-500 inline-block" />
+            <span>{doc.counts?.kuning || 0} Perlu teliti</span>
+          </span>
+          <span className="inline-flex items-center gap-1.5 text-emerald-700">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block" />
+            <span>{doc.counts?.hijau || 0} Aman</span>
+          </span>
+        </div>
+      </div>
+
+      {/* Filter Segmented Control */}
+      <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg mb-6 overflow-x-auto">
+        <button
+          type="button"
+          onClick={() => setFilter('all')}
+          className={`px-3 py-1.5 rounded text-xs font-medium transition-colors shrink-0 cursor-pointer ${
+            filter === 'all'
+              ? 'bg-white text-slate-900 shadow-2xs'
+              : 'text-slate-600 hover:text-slate-900'
+          }`}
+        >
+          Semua ({doc.clauses?.length || 0})
+        </button>
+        <button
+          type="button"
+          onClick={() => setFilter('merah')}
+          className={`px-3 py-1.5 rounded text-xs font-medium transition-colors shrink-0 cursor-pointer ${
+            filter === 'merah'
+              ? 'bg-white text-rose-700 shadow-2xs font-semibold'
+              : 'text-slate-600 hover:text-slate-900'
+          }`}
+        >
+          Berisiko ({doc.counts?.merah || 0})
+        </button>
+        <button
+          type="button"
+          onClick={() => setFilter('kuning')}
+          className={`px-3 py-1.5 rounded text-xs font-medium transition-colors shrink-0 cursor-pointer ${
+            filter === 'kuning'
+              ? 'bg-white text-amber-700 shadow-2xs font-semibold'
+              : 'text-slate-600 hover:text-slate-900'
+          }`}
+        >
+          Perlu teliti ({doc.counts?.kuning || 0})
+        </button>
+        <button
+          type="button"
+          onClick={() => setFilter('hijau')}
+          className={`px-3 py-1.5 rounded text-xs font-medium transition-colors shrink-0 cursor-pointer ${
+            filter === 'hijau'
+              ? 'bg-white text-emerald-700 shadow-2xs font-semibold'
+              : 'text-slate-600 hover:text-slate-900'
+          }`}
+        >
+          Aman ({doc.counts?.hijau || 0})
+        </button>
+      </div>
+
+      {/* Clause Accordion List */}
+      <div className="divide-y divide-slate-200 border-y border-slate-200 mb-10">
+        {filteredClauses.length === 0 ? (
+          <div className="py-8 text-center text-xs text-slate-500">
+            Tidak ada pasal dalam kategori filter ini.
+          </div>
+        ) : (
+          filteredClauses.map((c) => {
+            const risk = getRiskMeta(c.level);
+            const isOpen = !!openMap[c.nomor_pasal];
 
             return (
               <div
                 key={c.nomor_pasal}
                 id={`clause-card-${c.nomor_pasal}`}
-                className={`bg-white rounded-2xl p-5 sm:p-6 shadow-xs border border-slate-200/80 space-y-4 ${borderRibbon} transition-all duration-300`}
+                className="py-3.5 transition-colors"
               >
-                {/* Clause Header */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="font-headline-md text-lg text-slate-900 font-extrabold">Pasal {c.nomor_pasal}</span>
-                    {c.judul && <span className="font-title-sm text-sm text-slate-600 font-medium">• {c.judul}</span>}
-                    <span className={`px-2.5 py-0.5 rounded font-label-sm text-xs font-bold ${
-                      isRed ? 'bg-rose-100 text-rose-800' : isYellow ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800'
-                    }`}>
-                      {isRed ? 'Risiko Tinggi' : isYellow ? 'Perlu Teliti' : 'Aman & Wajar'}
+                {/* Accordion Header */}
+                <button
+                  type="button"
+                  onClick={() => toggleAccordion(c.nomor_pasal)}
+                  className="w-full flex items-center justify-between gap-3 text-left focus:outline-none cursor-pointer py-1 group"
+                  aria-expanded={isOpen}
+                >
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <span className={`w-2 h-2 rounded-full ${risk.dot} shrink-0`} />
+                    <span className={`text-xs font-semibold ${risk.text} shrink-0`}>
+                      {risk.label}
+                    </span>
+                    <span className="text-slate-300">·</span>
+                    <span className="text-sm font-semibold text-slate-900 truncate group-hover:text-accent transition-colors">
+                      Pasal {c.nomor_pasal} {c.judul ? `· ${c.judul}` : ''}
                     </span>
                   </div>
 
-                  <span className={`font-label-sm text-xs font-bold flex items-center gap-1 shrink-0 ${
-                    isRed ? 'text-rose-600' : isYellow ? 'text-amber-700' : 'text-emerald-700'
-                  }`}>
-                    <span className="material-symbols-outlined text-[16px]">
-                      {isRed ? 'warning' : isYellow ? 'info' : 'check_circle'}
-                    </span>
-                    <span className="hidden sm:inline">{isRed ? 'KLAUSUL BERISIKO' : isYellow ? 'PERLU KLARIFIKASI' : 'KETENTUAN STANDAR'}</span>
+                  <span className="material-symbols-outlined text-[20px] text-slate-400 group-hover:text-slate-700 shrink-0">
+                    {isOpen ? 'expand_less' : 'expand_more'}
                   </span>
-                </div>
+                </button>
 
-                {/* Source Original Text */}
-                <div className="p-4 rounded-xl bg-slate-50 font-body-legal text-xs sm:text-sm text-slate-600 italic border border-slate-200/60 leading-relaxed">
-                  "{c.isi}"
-                </div>
-
-                {/* 2-Column Explanation */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div className="p-4 rounded-xl bg-slate-50/80 border border-slate-200/60 space-y-1">
-                    <div className="flex items-center gap-1.5 text-slate-500 font-label-sm text-xs font-bold uppercase tracking-wider">
-                      <span className="material-symbols-outlined text-[16px] text-slate-600">visibility</span>
-                      <span>Alasan Penilaian Risiko:</span>
+                {/* Accordion Body (Stacked Vertically) */}
+                {isOpen && (
+                  <div className="mt-3 pl-4 sm:pl-5 space-y-4 text-sm text-slate-800">
+                    
+                    {/* 1. Teks Asli Pasal (Gaya Legal) */}
+                    <div>
+                      <div className="text-xs font-medium text-slate-500 mb-1">Teks asli pasal:</div>
+                      <div className="text-[15px] leading-[26px] text-slate-800 bg-slate-50 border border-slate-200 rounded p-3 font-normal whitespace-pre-line">
+                        {c.isi}
+                      </div>
                     </div>
-                    <p className="font-body-default text-xs sm:text-sm text-slate-800 leading-relaxed">{c.alasan}</p>
-                  </div>
 
-                  <div className="p-4 rounded-xl bg-teal-50/60 border border-teal-100/80 space-y-1">
-                    <div className="flex items-center gap-1.5 text-teal-800 font-label-sm text-xs font-bold uppercase tracking-wider">
-                      <span className="material-symbols-outlined text-[16px]">translate</span>
-                      <span>Maksud Bahasa Awam:</span>
-                    </div>
-                    <p className="font-body-default text-xs sm:text-sm text-slate-800 leading-relaxed">{c.penjelasan_awam}</p>
-                  </div>
-                </div>
+                    {/* 2. Kenapa Berisiko */}
+                    {c.alasan && (
+                      <div>
+                        <div className="text-xs font-semibold text-slate-900 mb-0.5">Kenapa berisiko:</div>
+                        <p className="text-sm text-slate-700 leading-relaxed">{c.alasan}</p>
+                      </div>
+                    )}
 
-                {/* Fair Revision Suggestion */}
-                {c.saran_revisi && (
-                  <div className="p-4 rounded-xl bg-amber-50/70 border border-amber-200/70 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    <div className="space-y-1 min-w-0">
-                      <span className="font-label-md text-xs text-amber-900 font-bold flex items-center gap-1">
-                        <span className="material-symbols-outlined text-[16px] text-amber-700">tips_and_updates</span>
-                        Usulan Draf Pengganti yang Lebih Adil:
-                      </span>
-                      <p className="font-body-sm text-xs sm:text-sm text-slate-800 italic leading-relaxed">"{c.saran_revisi}"</p>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => onCopy(c.saran_revisi)}
-                      className="px-3.5 py-2 rounded-lg bg-white hover:bg-slate-50 border border-amber-300 text-slate-900 font-label-md text-xs font-semibold flex items-center gap-1 shrink-0 self-start sm:self-center shadow-xs cursor-pointer active:scale-95 transition-all"
-                    >
-                      <span className="material-symbols-outlined text-[15px]">content_copy</span>
-                      <span>Salin Revisi</span>
-                    </button>
+                    {/* 3. Artinya dalam Bahasa Sehari-hari */}
+                    {c.penjelasan_awam && (
+                      <div>
+                        <div className="text-xs font-semibold text-slate-900 mb-0.5">Artinya dalam bahasa sehari-hari:</div>
+                        <p className="text-sm text-slate-700 leading-relaxed">{c.penjelasan_awam}</p>
+                      </div>
+                    )}
+
+                    {/* 4. Usulan Revisi (Kotak bg-subtle + Tombol Salin) */}
+                    {c.saran_revisi && (
+                      <div className="bg-slate-50 border border-slate-200 rounded-lg p-3">
+                        <div className="flex items-center justify-between gap-2 mb-1.5">
+                          <span className="text-xs font-semibold text-slate-900">Usulan revisi</span>
+                          <button
+                            type="button"
+                            onClick={() => onCopy(c.saran_revisi)}
+                            className="text-xs font-medium text-accent hover:underline cursor-pointer"
+                          >
+                            Salin
+                          </button>
+                        </div>
+                        <p className="text-sm text-slate-800 leading-relaxed italic">
+                          "{c.saran_revisi}"
+                        </p>
+                      </div>
+                    )}
+
                   </div>
                 )}
               </div>
             );
-          })}
+          })
+        )}
+      </div>
+
+      {/* Pertanyaan Negosiasi: Bagian di Bawah Daftar */}
+      {doc.recommended_questions && doc.recommended_questions.length > 0 && (
+        <div className="border border-slate-200 rounded-xl p-5 bg-slate-50/50 mb-8">
+          <div className="mb-3">
+            <h2 className="text-sm font-semibold text-slate-900">
+              Pertanyaan negosiasi yang disarankan
+            </h2>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Ajukan poin-poin ini kepada pihak kedua sebelum menyepakati kontrak.
+            </p>
+          </div>
+
+          <div className="space-y-2">
+            {doc.recommended_questions.map((q, idx) => (
+              <div
+                key={idx}
+                className="bg-white border border-slate-200 rounded p-3 flex items-start justify-between gap-3"
+              >
+                <div className="text-xs sm:text-sm text-slate-800 leading-relaxed">
+                  <span className="font-semibold text-slate-500 mr-2">{idx + 1}.</span>
+                  {q}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => onCopy(q)}
+                  className="text-xs text-accent hover:underline font-medium shrink-0 cursor-pointer pt-0.5"
+                >
+                  Salin
+                </button>
+              </div>
+            ))}
+          </div>
         </div>
       )}
+
+      {/* Bottom Action: Analisis Kontrak Lain */}
+      <div className="text-center pt-2">
+        <button
+          type="button"
+          onClick={onNewAnalysis}
+          className="text-xs text-slate-500 hover:text-slate-900 underline cursor-pointer"
+        >
+          ← Analisis kontrak lain
+        </button>
+      </div>
 
     </div>
   );
