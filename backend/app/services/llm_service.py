@@ -3,7 +3,8 @@ import logging
 import re
 import httpx
 from typing import Optional, Dict, Any
-import google.generativeai as genai
+from google import genai
+from google.genai import types
 
 from backend.app.core.config import settings
 from backend.app.core.prompts import SYSTEM_ANALYZE_CLAUSE_PROMPT
@@ -16,10 +17,11 @@ class LLMService:
     def __init__(self):
         self.gemini_ready = False
         self.groq_ready = bool(settings.GROQ_API_KEY)
+        self.client: Optional[genai.Client] = None
         
         if settings.GEMINI_API_KEY:
             try:
-                genai.configure(api_key=settings.GEMINI_API_KEY)
+                self.client = genai.Client(api_key=settings.GEMINI_API_KEY)
                 self.gemini_ready = True
             except Exception as e:
                 logger.error(f"Failed to configure Gemini: {e}")
@@ -62,13 +64,18 @@ class LLMService:
         return self._heuristic_analyze(clause_number, clause_title, clause_content)
 
     async def _call_gemini(self, prompt: str) -> str:
-        model = genai.GenerativeModel(
-            model_name=settings.GEMINI_MODEL,
+        if not self.client:
+            raise RuntimeError("Gemini client not initialized")
+        config = types.GenerateContentConfig(
             system_instruction=SYSTEM_ANALYZE_CLAUSE_PROMPT,
-            generation_config={"response_mime_type": "application/json"}
+            response_mime_type="application/json"
         )
-        response = await model.generate_content_async(prompt)
-        return response.text
+        response = await self.client.aio.models.generate_content(
+            model=settings.GEMINI_MODEL,
+            contents=prompt,
+            config=config
+        )
+        return response.text or ""
 
     async def _call_groq(self, prompt: str) -> str:
         url = "https://api.groq.com/openai/v1/chat/completions"

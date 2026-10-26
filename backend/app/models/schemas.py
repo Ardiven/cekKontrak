@@ -88,4 +88,5 @@ class ChatResponse(BaseModel):
     reply: str
     cited_clauses: List[str] = []
     is_grounded: bool = True
+    model_used: str = "heuristic"  # 'gemini', 'groq', or 'heuristic'
     disclaimer: str = "Jawaban didasarkan pada isi kontrak yang dianalisis dan bukan nasihat hukum."

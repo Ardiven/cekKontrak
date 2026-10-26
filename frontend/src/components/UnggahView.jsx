@@ -40,7 +40,7 @@ export default function UnggahView({ onAnalyze, isLoading, onLoadSample }) {
   const handleSubmit = () => {
     if (tab === 'pdf') {
       if (!file) {
-        alert('Silakan pilih atau jatuhkan file PDF kontrak terlebih dahulu.');
+        alert('Silakan pilih atau tarik file PDF kontrak terlebih dahulu.');
         return;
       }
       onAnalyze({ type: 'pdf', file, title, contractType });
@@ -54,110 +54,110 @@ export default function UnggahView({ onAnalyze, isLoading, onLoadSample }) {
   };
 
   return (
-    <div class="px-gutter lg:px-margin py-space-lg flex flex-col gap-space-lg max-w-7xl mx-auto w-full">
+    <div className="py-4 sm:py-6 flex flex-col gap-6 sm:gap-8 max-w-6xl mx-auto w-full">
       
       {/* Top Header Breadcrumb & Heading */}
-      <section class="flex flex-col md:flex-row md:items-end justify-between gap-space-md">
-        <div class="flex flex-col gap-space-xs">
-          <div class="flex items-center gap-space-xs text-on-surface-variant font-label-md text-label-md uppercase tracking-wider">
-            <span class="material-symbols-outlined text-[16px] text-secondary">shield</span>
+      <section className="flex flex-col gap-4">
+        <div className="flex flex-col gap-1.5">
+          <div className="flex items-center gap-2 text-slate-500 font-label-md text-xs uppercase tracking-wider">
+            <span className="material-symbols-outlined text-[16px] text-secondary">shield</span>
             <span>Workspace Analisis</span>
-            <span class="text-outline-variant">/</span>
-            <span class="text-secondary font-semibold">Persiapan Dokumen</span>
+            <span className="text-slate-300">/</span>
+            <span className="text-secondary font-bold">Persiapan Dokumen</span>
           </div>
-          <h1 class="font-headline-xl text-headline-xl text-on-surface tracking-tight font-bold">
+          <h1 className="font-headline-xl text-2xl sm:text-3xl text-slate-900 tracking-tight font-extrabold">
             Analisis Kontrak Baru
           </h1>
-          <p class="font-body-default text-body-default text-on-surface-variant max-w-2xl">
-            Unggah dokumen PDF atau tempel isi pasal kontrak untuk mendeteksi klausul berisiko dan mendapatkan penjelasan awam dalam hitungan detik.
+          <p className="font-body-default text-sm text-slate-600 max-w-2xl">
+            Unggah file PDF atau tempel teks pasal kontrak Anda untuk membedah potensi risiko, alasan, dan draf revisi yang adil.
           </p>
         </div>
 
         {/* Security badges */}
-        <div class="flex items-center gap-space-md p-space-sm bg-surface-container-low rounded-xl">
-          <div class="flex items-center gap-space-xs px-space-sm py-space-xs bg-surface-container-lowest rounded-lg shadow-sm">
-            <span class="material-symbols-outlined text-secondary text-[18px]">lock</span>
-            <span class="font-label-sm text-label-sm text-on-surface font-semibold">Enkripsi Aman</span>
+        <div className="flex flex-wrap items-center gap-2 p-2 bg-slate-100 rounded-xl border border-slate-200/80">
+          <div className="flex items-center gap-1.5 px-3 py-1.5 bg-white rounded-lg shadow-xs border border-slate-200">
+            <span className="material-symbols-outlined text-secondary text-[16px]">lock</span>
+            <span className="font-label-sm text-xs text-slate-800 font-semibold">Enkripsi Aman</span>
           </div>
-          <div class="flex items-center gap-space-xs px-space-sm py-space-xs bg-surface-container-lowest rounded-lg shadow-sm">
-            <span class="material-symbols-outlined text-secondary text-[18px]">bolt</span>
-            <span class="font-label-sm text-label-sm text-on-surface font-semibold">Hash Caching ⚡</span>
+          <div className="flex items-center gap-1.5 px-3 py-1.5 bg-white rounded-lg shadow-xs border border-slate-200">
+            <span className="material-symbols-outlined text-secondary text-[16px]">bolt</span>
+            <span className="font-label-sm text-xs text-slate-800 font-semibold">Hash Caching ⚡</span>
           </div>
         </div>
       </section>
 
       {/* Main Grid: Form Left, Preview/Tips Right */}
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 items-start">
         
         {/* Left Column: Form Container */}
-        <div class="lg:col-span-8 flex flex-col gap-space-lg">
-          <div class="bg-surface-container-lowest rounded-xl shadow-sm p-space-lg flex flex-col gap-space-lg">
+        <div className="lg:col-span-8 flex flex-col gap-6">
+          <div className="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 sm:p-8 flex flex-col gap-6">
             
             {/* Tab switchers */}
-            <div class="flex items-center gap-space-xs bg-surface-container-low p-1 rounded-lg">
+            <div className="flex items-center gap-1.5 bg-slate-100 p-1.5 rounded-xl border border-slate-200/70">
               <button
                 type="button"
                 onClick={() => setTab('pdf')}
-                class={`flex-1 flex items-center justify-center gap-space-xs py-space-sm rounded-lg font-label-md text-label-md transition-all ${
+                className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg font-label-md text-sm transition-all cursor-pointer ${
                   tab === 'pdf' 
-                    ? 'bg-surface-container-lowest text-on-surface shadow-sm font-semibold' 
-                    : 'text-on-surface-variant hover:text-on-surface'
+                    ? 'bg-white text-slate-900 shadow-xs font-bold border border-slate-200/70' 
+                    : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
-                <span class="material-symbols-outlined text-[18px] text-secondary">picture_as_pdf</span>
+                <span className="material-symbols-outlined text-[19px] text-secondary">picture_as_pdf</span>
                 <span>Unggah File PDF</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setTab('text')}
-                class={`flex-1 flex items-center justify-center gap-space-xs py-space-sm rounded-lg font-label-md text-label-md transition-all ${
+                className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg font-label-md text-sm transition-all cursor-pointer ${
                   tab === 'text' 
-                    ? 'bg-surface-container-lowest text-on-surface shadow-sm font-semibold' 
-                    : 'text-on-surface-variant hover:text-on-surface'
+                    ? 'bg-white text-slate-900 shadow-xs font-bold border border-slate-200/70' 
+                    : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
-                <span class="material-symbols-outlined text-[18px]">edit_note</span>
+                <span className="material-symbols-outlined text-[19px]">edit_note</span>
                 <span>Tempel Teks Kontrak</span>
               </button>
             </div>
 
             {/* Content: PDF Dropzone */}
             {tab === 'pdf' ? (
-              <div class="flex flex-col gap-space-md">
+              <div className="flex flex-col gap-4">
                 {!file ? (
                   <div
                     onClick={() => fileInputRef.current?.click()}
                     onDragOver={(e) => e.preventDefault()}
                     onDrop={handleDrop}
-                    class="relative group bg-surface-container-low/70 hover:bg-secondary-container/20 rounded-xl p-space-xl flex flex-col items-center justify-center text-center transition-all cursor-pointer border-2 border-dashed border-outline-variant/50 hover:border-secondary"
+                    className="relative group bg-slate-50 hover:bg-teal-50/50 rounded-2xl p-10 flex flex-col items-center justify-center text-center transition-all cursor-pointer border-2 border-dashed border-slate-300 hover:border-secondary"
                   >
-                    <div class="w-14 h-14 rounded-2xl bg-surface-container-lowest shadow-md flex items-center justify-center text-secondary mb-space-md group-hover:scale-110 transition-transform">
-                      <span class="material-symbols-outlined text-[32px]">upload_file</span>
+                    <div className="w-14 h-14 rounded-2xl bg-white shadow-xs flex items-center justify-center text-secondary mb-3 group-hover:scale-105 transition-transform border border-slate-200">
+                      <span className="material-symbols-outlined text-[32px]">upload_file</span>
                     </div>
-                    <p class="font-title-sm text-title-sm text-on-surface mb-space-xs font-semibold">
-                      Tarik dan letakkan file PDF di sini atau <span class="text-secondary underline underline-offset-4">pilih file dari perangkat</span>
+                    <p className="font-title-sm text-sm sm:text-base text-slate-800 mb-1 font-semibold">
+                      Tarik dan letakkan file PDF di sini atau <span className="text-secondary underline underline-offset-4">pilih dari perangkat</span>
                     </p>
-                    <p class="font-body-sm text-body-sm text-on-surface-variant max-w-md">
-                      Mendukung PDF berbasis teks (maks 10MB / 25 halaman). Dokumen hasil scan foto tulisan tangan belum didukung.
+                    <p className="font-body-sm text-xs text-slate-500 max-w-md">
+                      Mendukung PDF berbasis teks (maks 10MB / 25 halaman). Dokumen hasil foto tulisan tangan belum didukung.
                     </p>
                     <input
                       ref={fileInputRef}
                       type="file"
                       accept=".pdf"
                       onChange={handleFileChange}
-                      class="hidden"
+                      className="hidden"
                     />
                   </div>
                 ) : (
-                  <div class="bg-surface-container-low rounded-xl p-space-md flex flex-col sm:flex-row sm:items-center justify-between gap-space-md shadow-sm border border-secondary/30">
-                    <div class="flex items-center gap-space-md min-w-0">
-                      <div class="w-12 h-12 rounded-xl bg-secondary-container text-on-secondary-container flex items-center justify-center flex-shrink-0">
-                        <span class="material-symbols-outlined text-[28px]">picture_as_pdf</span>
+                  <div className="bg-slate-50 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 border border-secondary/40 shadow-xs">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="w-11 h-11 rounded-xl bg-teal-100 text-teal-800 flex items-center justify-center flex-shrink-0">
+                        <span className="material-symbols-outlined text-[24px]">picture_as_pdf</span>
                       </div>
-                      <div class="flex flex-col min-w-0">
-                        <span class="font-title-sm text-title-sm text-on-surface font-semibold truncate">{file.name}</span>
-                        <span class="font-label-sm text-label-sm text-on-surface-variant">
+                      <div className="flex flex-col min-w-0">
+                        <span className="font-title-sm text-sm text-slate-900 font-bold truncate">{file.name}</span>
+                        <span className="font-label-sm text-xs text-slate-500">
                           {(file.size / 1024).toFixed(1)} KB • Siap dianalisis
                         </span>
                       </div>
@@ -165,9 +165,9 @@ export default function UnggahView({ onAnalyze, isLoading, onLoadSample }) {
                     <button
                       type="button"
                       onClick={() => setFile(null)}
-                      class="px-space-sm py-space-xs rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-lowest font-label-md text-label-md transition-colors flex items-center gap-1 self-end sm:self-center"
+                      className="px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-white border border-slate-200 font-label-md text-xs transition-colors flex items-center gap-1 self-end sm:self-center cursor-pointer"
                     >
-                      <span class="material-symbols-outlined text-[16px]">sync</span>
+                      <span className="material-symbols-outlined text-[15px]">sync</span>
                       <span>Ganti File</span>
                     </button>
                   </div>
@@ -175,38 +175,38 @@ export default function UnggahView({ onAnalyze, isLoading, onLoadSample }) {
               </div>
             ) : (
               /* Content: Text Paste */
-              <div class="flex flex-col gap-space-sm">
+              <div className="flex flex-col gap-2">
                 <textarea
                   value={text}
                   onChange={(e) => setText(e.target.value)}
                   placeholder="Tempelkan seluruh teks pasal kontrak perjanjian di sini... (Minimal 20 karakter)"
-                  class="w-full h-64 p-space-md rounded-xl bg-surface-container-low border border-outline-variant/40 text-on-surface font-body-default text-body-default focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 resize-y"
+                  className="w-full h-64 p-4 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 font-body-default text-sm focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 resize-y"
                 />
-                <div class="text-right font-label-sm text-label-sm text-on-surface-variant">
+                <div className="text-right font-label-sm text-xs text-slate-500">
                   {text.length} karakter
                 </div>
               </div>
             )}
 
             {/* Document Metadata Form */}
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-space-md pt-space-xs border-t border-outline-variant/30">
-              <div class="flex flex-col gap-1">
-                <label class="font-label-md text-label-md text-on-surface-variant">Judul Kontrak (Opsional)</label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-slate-100">
+              <div className="flex flex-col gap-1.5">
+                <label className="font-label-md text-xs text-slate-700 font-semibold">Judul Kontrak (Opsional)</label>
                 <input
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  placeholder="Misal: Perjanjian Sewa Kamar Kos"
-                  class="px-space-md py-2.5 rounded-lg bg-surface-container-low border border-outline-variant/40 text-on-surface font-body-default text-body-default focus:outline-none focus:border-secondary"
+                  placeholder="Misal: Perjanjian Sewa Kamar Kost"
+                  className="px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 font-body-default text-sm focus:outline-none focus:border-secondary"
                 />
               </div>
 
-              <div class="flex flex-col gap-1">
-                <label class="font-label-md text-label-md text-on-surface-variant">Kategori Kontrak</label>
+              <div className="flex flex-col gap-1.5">
+                <label className="font-label-md text-xs text-slate-700 font-semibold">Kategori Kontrak</label>
                 <select
                   value={contractType}
                   onChange={(e) => setContractType(e.target.value)}
-                  class="px-space-md py-2.5 rounded-lg bg-surface-container-low border border-outline-variant/40 text-on-surface font-body-default text-body-default focus:outline-none focus:border-secondary"
+                  className="px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-300 text-slate-900 font-body-default text-sm focus:outline-none focus:border-secondary"
                 >
                   <option value="sewa_kos">Sewa Kos</option>
                   <option value="kerja_magang">Kerja Magang / Freelance</option>
@@ -218,21 +218,21 @@ export default function UnggahView({ onAnalyze, isLoading, onLoadSample }) {
             </div>
 
             {/* Action CTA */}
-            <div class="pt-space-sm flex justify-end">
+            <div className="pt-2 flex justify-end">
               <button
                 type="button"
                 onClick={handleSubmit}
                 disabled={isLoading}
-                class="w-full sm:w-auto px-space-xl py-3 rounded-lg bg-secondary hover:bg-on-secondary-fixed-variant text-on-secondary font-label-md text-label-md shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-secondary hover:bg-on-secondary-fixed-variant text-white font-label-md text-sm font-semibold shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer active:scale-98"
               >
                 {isLoading ? (
                   <>
-                    <span class="material-symbols-outlined animate-spin text-[20px]">progress_activity</span>
+                    <span className="material-symbols-outlined animate-spin text-[20px]">progress_activity</span>
                     <span>Menganalisis Pasal...</span>
                   </>
                 ) : (
                   <>
-                    <span class="material-symbols-outlined text-[20px]">bolt</span>
+                    <span className="material-symbols-outlined text-[20px]">bolt</span>
                     <span>Mulai Analisis Kontrak</span>
                   </>
                 )}
@@ -242,30 +242,30 @@ export default function UnggahView({ onAnalyze, isLoading, onLoadSample }) {
           </div>
         </div>
 
-        {/* Right Column: Sample Contracts & Tips */}
-        <div class="lg:col-span-4 flex flex-col gap-space-md">
-          <div class="bg-surface-container-lowest rounded-xl p-space-lg shadow-sm space-y-space-md">
-            <h3 class="font-title-sm text-title-sm text-on-surface font-bold flex items-center gap-1.5">
-              <span class="material-symbols-outlined text-secondary text-[20px]">quickreply</span>
+        {/* Right Column: Sample Contracts Quick Test */}
+        <div className="lg:col-span-4 flex flex-col gap-4">
+          <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-200/80 space-y-4">
+            <h3 className="font-title-sm text-sm text-slate-900 font-bold flex items-center gap-1.5 pb-2 border-b border-slate-100">
+              <span className="material-symbols-outlined text-secondary text-[20px]">quickreply</span>
               Coba Contoh Cepat:
             </h3>
-            <p class="font-body-sm text-body-sm text-on-surface-variant">
-              Klik salah satu contoh kontrak di bawah ini untuk langsung mengisi dan menguji sistem:
+            <p className="font-body-sm text-xs text-slate-600 leading-relaxed">
+              Klik salah satu dokumen uji coba di bawah ini untuk langsung mengisi dan menguji sistem:
             </p>
 
-            <div class="space-y-2">
+            <div className="space-y-2">
               <button
                 type="button"
                 onClick={() => {
                   onLoadSample('sewa_kos');
                   setTab('text');
                 }}
-                class="w-full text-left p-space-sm rounded-lg bg-surface-container-low hover:bg-surface-container transition-colors flex items-start gap-space-xs"
+                className="w-full text-left p-3 rounded-xl bg-slate-50 hover:bg-teal-50/50 border border-slate-200/70 hover:border-secondary transition-all flex items-start gap-2.5 cursor-pointer"
               >
-                <span class="text-xl">🏠</span>
-                <div>
-                  <div class="font-label-md text-label-md text-on-surface font-semibold">Sewa Kos Griya Harmoni</div>
-                  <div class="font-label-sm text-label-sm text-on-surface-variant">Memuat klausul deposit hangus & penalti keluar awal</div>
+                <span className="text-xl">🏠</span>
+                <div className="min-w-0">
+                  <div className="font-label-md text-xs text-slate-900 font-bold truncate">Sewa Kos Griya Harmoni</div>
+                  <div className="font-label-sm text-[11px] text-slate-500 leading-snug">Deposit hangus & penalti sisa sewa</div>
                 </div>
               </button>
 
@@ -275,12 +275,12 @@ export default function UnggahView({ onAnalyze, isLoading, onLoadSample }) {
                   onLoadSample('kerja_magang');
                   setTab('text');
                 }}
-                class="w-full text-left p-space-sm rounded-lg bg-surface-container-low hover:bg-surface-container transition-colors flex items-start gap-space-xs"
+                className="w-full text-left p-3 rounded-xl bg-slate-50 hover:bg-teal-50/50 border border-slate-200/70 hover:border-secondary transition-all flex items-start gap-2.5 cursor-pointer"
               >
-                <span class="text-xl">💼</span>
-                <div>
-                  <div class="font-label-md text-label-md text-on-surface font-semibold">Kerja Magang & Freelance</div>
-                  <div class="font-label-sm text-label-sm text-on-surface-variant">Klausul larangan proyek luar & wewenang sepihak</div>
+                <span className="text-xl">💼</span>
+                <div className="min-w-0">
+                  <div className="font-label-md text-xs text-slate-900 font-bold truncate">Kerja Magang & Freelance</div>
+                  <div className="font-label-sm text-[11px] text-slate-500 leading-snug">Larangan non-compete 2 tahun & hak cipta</div>
                 </div>
               </button>
 
@@ -290,12 +290,12 @@ export default function UnggahView({ onAnalyze, isLoading, onLoadSample }) {
                   onLoadSample('pinjaman');
                   setTab('text');
                 }}
-                class="w-full text-left p-space-sm rounded-lg bg-surface-container-low hover:bg-surface-container transition-colors flex items-start gap-space-xs"
+                className="w-full text-left p-3 rounded-xl bg-slate-50 hover:bg-teal-50/50 border border-slate-200/70 hover:border-secondary transition-all flex items-start gap-2.5 cursor-pointer"
               >
-                <span class="text-xl">💳</span>
-                <div>
-                  <div class="font-label-md text-label-md text-on-surface font-semibold">Pinjaman Dana Cepat</div>
-                  <div class="font-label-sm text-label-sm text-on-surface-variant">Bunga harian 1.5% & akses kontak sepihak</div>
+                <span className="text-xl">💳</span>
+                <div className="min-w-0">
+                  <div className="font-label-md text-xs text-slate-900 font-bold truncate">Pinjaman Dana Cepat</div>
+                  <div className="font-label-sm text-[11px] text-slate-500 leading-snug">Bunga harian 1.5% & akses kontak</div>
                 </div>
               </button>
 
@@ -305,12 +305,12 @@ export default function UnggahView({ onAnalyze, isLoading, onLoadSample }) {
                   onLoadSample('snk_aplikasi');
                   setTab('text');
                 }}
-                class="w-full text-left p-space-sm rounded-lg bg-surface-container-low hover:bg-surface-container transition-colors flex items-start gap-space-xs"
+                className="w-full text-left p-3 rounded-xl bg-slate-50 hover:bg-teal-50/50 border border-slate-200/70 hover:border-secondary transition-all flex items-start gap-2.5 cursor-pointer"
               >
-                <span class="text-xl">📱</span>
-                <div>
-                  <div class="font-label-md text-label-md text-on-surface font-semibold">S&K SuperApp Digital</div>
-                  <div class="font-label-sm text-label-sm text-on-surface-variant">Pelepasan ganti rugi total & ubah aturan sepihak</div>
+                <span className="text-xl">📱</span>
+                <div className="min-w-0">
+                  <div className="font-label-md text-xs text-slate-900 font-bold truncate">S&K SuperApp Digital</div>
+                  <div className="font-label-sm text-[11px] text-slate-500 leading-snug">Pelepasan ganti rugi total & klausul sepihak</div>
                 </div>
               </button>
             </div>

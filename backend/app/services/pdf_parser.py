@@ -1,4 +1,4 @@
-import fitz  # PyMuPDF
+import pymupdf as fitz  # PyMuPDF (replaces deprecated `import fitz`)
 import hashlib
 import re
 from typing import Tuple

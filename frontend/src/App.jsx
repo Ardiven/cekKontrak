@@ -25,7 +25,7 @@ export default function App() {
 
   const showToast = (msg) => {
     setToast(msg);
-    setTimeout(() => setToast(''), 3000);
+    setTimeout(() => setToast(''), 3200);
   };
 
   const handleCopy = (text) => {
@@ -40,7 +40,6 @@ export default function App() {
     const sample = sampleContracts[key];
     if (!sample) return;
     setView('unggah');
-    // Pre-analyze directly or populate form
     handleAnalyze({
       type: 'text',
       text: sample.text,
@@ -87,7 +86,7 @@ export default function App() {
       setView('dashboard');
 
       if (docData.from_cache) {
-        showToast('Hasil langsung dimuat dari Cache Hash! ⚡');
+        showToast('Hasil instan dimuat dari Cache Hash! ⚡');
       } else {
         showToast('Analisis kontrak selesai berhasil!');
       }
@@ -122,16 +121,16 @@ export default function App() {
       const el = document.getElementById(`clause-card-${clauseNum}`);
       if (el) {
         el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        el.classList.add('ring-4', 'ring-secondary', 'scale-[1.01]');
+        el.classList.add('ring-4', 'ring-teal-500', 'scale-[1.01]');
         setTimeout(() => {
-          el.classList.remove('ring-4', 'ring-secondary', 'scale-[1.01]');
-        }, 3000);
+          el.classList.remove('ring-4', 'ring-teal-500', 'scale-[1.01]');
+        }, 2800);
       }
     }, 150);
   };
 
   return (
-    <div class="min-h-screen bg-surface flex flex-col font-body-default text-on-surface">
+    <div className="min-h-screen bg-slate-50 flex flex-col font-body-default text-slate-900">
       
       {/* Top Navbar */}
       <Navbar
@@ -142,8 +141,8 @@ export default function App() {
       />
 
       {/* Main Container */}
-      <main class="flex-1 w-full pt-20 pb-16">
-        <div class="max-w-7xl mx-auto px-gutter lg:px-margin">
+      <main className="flex-1 w-full pt-16 pb-12">
+        <div className="max-w-7xl mx-auto px-3 sm:px-5 lg:px-8">
           <DisclaimerBanner />
 
           {view === 'beranda' && (
