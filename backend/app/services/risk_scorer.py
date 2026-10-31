@@ -52,8 +52,13 @@ class RiskScorer:
             )
         elif score >= 35:
             risk_label = "Sedang (Perlu Perhatian)"
+            parts = []
+            if red_cnt:
+                parts.append(f"{red_cnt} pasal berisiko tinggi")
+            if yellow_cnt:
+                parts.append(f"{yellow_cnt} pasal yang ambigu atau perlu klarifikasi")
             summary = (
-                f"Ditemukan {yellow_cnt} pasal yang memiliki klausul ambigu atau memerlukan klarifikasi. "
+                f"Ditemukan {' dan '.join(parts) or 'beberapa pasal yang perlu diperhatikan'}. "
                 "Pastikan Anda mengajukan pertanyaan dan meminta batasan yang jelas sebelum sepakat."
             )
         else:

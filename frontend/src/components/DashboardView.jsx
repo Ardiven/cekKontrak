@@ -50,6 +50,36 @@ export default function DashboardView({ doc, onOpenChat, onNewAnalysis, onCopy }
     return { dot: 'bg-emerald-500', text: 'text-emerald-700', label: 'Aman' };
   };
 
+  // Teks asli pasal dengan bagian berisiko disorot (posisi start/end dari backend)
+  const renderHighlightedText = (c) => {
+    const spans = (c.sorotan || [])
+      .filter((h) => Number.isInteger(h.start) && Number.isInteger(h.end) && h.end > h.start && h.end <= (c.isi || '').length)
+      .sort((a, b) => a.start - b.start);
+    if (spans.length === 0) return c.isi;
+    const markClass = c.level === 'merah'
+      ? 'bg-rose-100 text-rose-900 decoration-rose-400'
+      : 'bg-amber-100 text-amber-900 decoration-amber-400';
+    const parts = [];
+    let cursor = 0;
+    spans.forEach((h, i) => {
+      if (h.start < cursor) return; // abaikan yang tumpang tindih
+      if (h.start > cursor) parts.push(c.isi.slice(cursor, h.start));
+      parts.push(
+        <mark
+          key={`h-${i}`}
+          title={h.keterangan || 'Bagian berisiko'}
+          className={`${markClass} underline decoration-2 underline-offset-2 rounded-sm px-0.5`}
+        >
+          {c.isi.slice(h.start, h.end)}
+          <sup className="ml-0.5 text-[10px] font-bold not-italic no-underline">{i + 1}</sup>
+        </mark>
+      );
+      cursor = h.end;
+    });
+    if (cursor < c.isi.length) parts.push(c.isi.slice(cursor));
+    return parts;
+  };
+
   // Score bar color
   const score = doc.overall_score || 0;
   let scoreBarColor = 'bg-emerald-500';
@@ -59,6 +89,19 @@ export default function DashboardView({ doc, onOpenChat, onNewAnalysis, onCopy }
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
       
+      {/* Peringatan bila sebagian/seluruh pasal tidak dianalisis AI */}
+      {doc.analysis_mode && doc.analysis_mode !== 'ai' && (
+        <div className="mb-5 flex items-start gap-2.5 rounded-md border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900">
+          <span className="material-symbols-outlined text-[20px] shrink-0">warning</span>
+          <p className="leading-relaxed">
+            {doc.analysis_mode === 'heuristik'
+              ? 'Layanan AI sedang tidak tersedia, jadi pasal-pasal di bawah hanya dinilai dengan pencocokan kata kunci. '
+              : 'Sebagian pasal tidak berhasil dianalisis AI dan hanya dinilai dengan pencocokan kata kunci (ditandai "Kata kunci"). '}
+            Hasilnya kurang akurat. Coba analisis ulang beberapa saat lagi.
+          </p>
+        </div>
+      )}
+
       {/* Header Meta & Title */}
       <div className="mb-6">
         <div className="text-xs text-slate-500 mb-1 flex items-center gap-1.5 flex-wrap">
@@ -191,13 +234,13 @@ export default function DashboardView({ doc, onOpenChat, onNewAnalysis, onCopy }
             Tidak ada pasal dalam kategori filter ini.
           </div>
         ) : (
-          filteredClauses.map((c) => {
+          filteredClauses.map((c, idx) => {
             const risk = getRiskMeta(c.level);
             const isOpen = !!openMap[c.nomor_pasal];
 
             return (
               <div
-                key={c.nomor_pasal}
+                key={`${c.nomor_pasal}-${idx}`}
                 id={`clause-card-${c.nomor_pasal}`}
                 className="py-3.5 transition-colors"
               >
@@ -217,6 +260,14 @@ export default function DashboardView({ doc, onOpenChat, onNewAnalysis, onCopy }
                     <span className="text-sm font-semibold text-slate-900 truncate group-hover:text-accent transition-colors">
                       Pasal {c.nomor_pasal} {c.judul ? `· ${c.judul}` : ''}
                     </span>
+                    {c.model_used === 'heuristic' && (
+                      <span
+                        className="text-[10px] font-medium uppercase tracking-wide text-amber-800 bg-amber-100 border border-amber-200 rounded px-1.5 py-0.5 shrink-0"
+                        title="Pasal ini tidak dianalisis AI, hanya pencocokan kata kunci"
+                      >
+                        Kata kunci
+                      </span>
+                    )}
                   </div>
 
                   <span className="material-symbols-outlined text-[20px] text-slate-400 group-hover:text-slate-700 shrink-0">
@@ -232,14 +283,39 @@ export default function DashboardView({ doc, onOpenChat, onNewAnalysis, onCopy }
                     <div>
                       <div className="text-xs font-medium text-slate-500 mb-1">Teks asli pasal:</div>
                       <div className="text-[15px] leading-[26px] text-slate-800 bg-slate-50 border border-slate-200 rounded p-3 font-normal whitespace-pre-line">
-                        {c.isi}
+                        {renderHighlightedText(c)}
                       </div>
                     </div>
+
+                    {/* Daftar bagian yang disorot + artinya */}
+                    {c.sorotan && c.sorotan.length > 0 && (
+                      <div>
+                        <div className="text-xs font-semibold text-slate-900 mb-1">Bagian yang disorot:</div>
+                        <ol className="space-y-1.5">
+                          {c.sorotan.map((h, i) => (
+                            <li key={`ket-${i}`} className="flex gap-2 text-sm text-slate-700 leading-relaxed">
+                              <span className={`shrink-0 mt-0.5 inline-flex items-center justify-center w-5 h-5 rounded-full text-[11px] font-bold ${c.level === 'merah' ? 'bg-rose-100 text-rose-800' : 'bg-amber-100 text-amber-800'}`}>
+                                {i + 1}
+                              </span>
+                              <span>{h.keterangan || 'Bagian ini menjadi sumber risiko.'}</span>
+                            </li>
+                          ))}
+                        </ol>
+                      </div>
+                    )}
+
+                    {c.model_used && (
+                      <div className="text-xs text-slate-500">
+                        Dianalisis oleh: {c.model_used === 'heuristic' ? 'pencocokan kata kunci (cadangan offline)' : c.model_used}
+                      </div>
+                    )}
 
                     {/* 2. Kenapa Berisiko */}
                     {c.alasan && (
                       <div>
-                        <div className="text-xs font-semibold text-slate-900 mb-0.5">Kenapa berisiko:</div>
+                        <div className="text-xs font-semibold text-slate-900 mb-0.5">
+                          {c.level === 'merah' ? 'Kenapa berisiko:' : c.level === 'kuning' ? 'Kenapa perlu diteliti:' : 'Alasan penilaian:'}
+                        </div>
                         <p className="text-sm text-slate-700 leading-relaxed">{c.alasan}</p>
                       </div>
                     )}

@@ -20,14 +20,56 @@ ATURAN PENILAIAN TINGKAT RISIKO:
    - Ketentuan umum yang wajar dan berimbang bagi kedua belah pihak.
    - Hak dan kewajiban standar yang lazim dalam perjanjian sejenis.
 
+ATURAN AKURASI (WAJIB):
+- Kutip angka, batas waktu, nominal, dan syarat PERSIS seperti di teks, termasuk kata pembatas seperti
+  "mana yang lebih besar", "maksimal", "kecuali", "hanya jika". Jangan menyederhanakan sampai maknanya berubah.
+- Jika pasal juga memuat ketentuan yang MELINDUNGI pengguna (mis. refund prorata, pemberitahuan, biaya ditanggung
+  penyedia, pengecualian), sebutkan dalam "alasan" dan pertimbangkan saat menentukan level.
+- "merah" hanya untuk ketentuan yang jelas merugikan dan tidak diimbangi perlindungan berarti; jika ada
+  pengimbang, gunakan "kuning".
+- Jangan menebak niat atau motif pihak penyusun kontrak; nilai hanya isi teks.
+- Jangan menyebut kewajiban yang tidak tertulis. Indemnifikasi/ganti rugi hanya berlaku pada kondisi yang disebut di teks.
+- Jika kontrak menyatakan tunduk pada hukum negara lain, sebutkan hal itu dan jangan mengklaim hukum Indonesia
+  pasti berlaku. Saran revisi tetap boleh mengusulkan perlindungan konsumen yang adil.
+- Jika teks hanya berisi judul tanpa ketentuan, beri level "hijau" dengan alasan "hanya judul bagian".
+
 FORMAT KELUARAN WAJIB (JSON murni tanpa markdown wrapper ```json):
 {
   "nomor_pasal": "<nomor pasal>",
   "level": "merah" | "kuning" | "hijau",
   "alasan": "<alasan obyektif singkat mengapa pasal ini dinilai demikian>",
   "penjelasan_awam": "<penjelasan dengan bahasa sehari-hari yang santai, jelas, tanpa jargon hukum rumit>",
-  "saran_revisi": "<rekomendasi redaksional kalimat pengganti yang lebih adil dan berimbang bila level merah/kuning, atau null jika hijau>"
+  "saran_revisi": "<rekomendasi redaksional kalimat pengganti yang lebih adil dan berimbang bila level merah/kuning, atau null jika hijau>",
+  "sorotan": [
+    {"kutipan": "<salinan PERSIS frasa/kalimat dari Isi Pasal yang menjadi sumber risiko>",
+     "keterangan": "<1 kalimat singkat bahasa Indonesia: apa arti/risiko bagian ini>"}
+  ]
 }
+
+ATURAN "sorotan":
+- Untuk level merah/kuning, isi 1-2 sorotan yang menunjukkan DI MANA risiko itu tertulis. Untuk hijau, isi [].
+- "kutipan" WAJIB disalin kata per kata dari Isi Pasal dalam bahasa aslinya (jangan diterjemahkan,
+  jangan diringkas, jangan diparafrasekan), panjang 5-40 kata, cukup bagian yang paling menunjukkan risikonya.
+- Pilih poin risiko yang paling penting; "keterangan" maksimal 1 kalimat pendek.
+
+PANJANG JAWABAN (agar cepat): "alasan" dan "penjelasan_awam" masing-masing maksimal 2 kalimat;
+"saran_revisi" maksimal 2 kalimat. Untuk level hijau, "alasan" dan "penjelasan_awam" cukup 1 kalimat.
+"""
+
+BATCH_OUTPUT_INSTRUCTION = """
+
+MODE BANYAK PASAL:
+Anda akan menerima beberapa pasal sekaligus, masing-masing diawali "### id=<angka>".
+Nilai SETIAP pasal secara terpisah dengan aturan di atas. Abaikan format keluaran tunggal di atas,
+dan kembalikan JSON murni dengan bentuk:
+{
+  "hasil": [
+    {"id": <angka id>, "nomor_pasal": "<nomor>", "level": "merah" | "kuning" | "hijau",
+     "alasan": "...", "penjelasan_awam": "...", "saran_revisi": "..." atau null,
+     "sorotan": [{"kutipan": "<salinan persis dari teks pasal>", "keterangan": "..."}]}
+  ]
+}
+Jumlah item di "hasil" harus sama dengan jumlah pasal yang diberikan.
 """
 
 SYSTEM_RAG_CHAT_PROMPT = """

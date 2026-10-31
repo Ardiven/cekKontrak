@@ -4,7 +4,7 @@ import os
 from typing import Optional, List, Dict, Any
 from datetime import datetime
 from backend.app.core.config import settings
-from backend.app.models.schemas import DocumentAnalysisResponse, DocumentMetadata
+from backend.app.models.schemas import DocumentAnalysisResponse, DocumentMetadata, ClauseAnalysis, get_analysis_mode
 
 
 class StorageService:
@@ -120,6 +120,7 @@ class StorageService:
         counts = json.loads(row["counts_json"]) if row["counts_json"] else {}
         clauses = json.loads(row["clauses_json"]) if row["clauses_json"] else []
         questions = json.loads(row["questions_json"]) if row["questions_json"] else []
+        clause_models = [ClauseAnalysis(**c) for c in clauses]
 
         return DocumentAnalysisResponse(
             document_id=row["id"],
@@ -130,11 +131,12 @@ class StorageService:
             risk_level=row["risk_level"],
             summary=row["summary"],
             counts=counts,
-            clauses=clauses,
+            clauses=clause_models,
             questions=questions,
             created_at=row["created_at"],
             from_cache=from_cache,
-            segmentation_fallback=bool(row["segmentation_fallback"])
+            segmentation_fallback=bool(row["segmentation_fallback"]),
+            analysis_mode=get_analysis_mode(clause_models)
         )
 
 

@@ -18,6 +18,13 @@ class ContractType(str, Enum):
     LAINNYA = "lainnya"
 
 
+class Highlight(BaseModel):
+    start: int = Field(description="Posisi awal kutipan di teks asli pasal (indeks karakter)")
+    end: int = Field(description="Posisi akhir kutipan (eksklusif)")
+    kutipan: str = Field(description="Kalimat/frasa asli yang berisiko")
+    keterangan: str = Field(default="", description="Penjelasan singkat dalam bahasa Indonesia")
+
+
 class ClauseAnalysis(BaseModel):
     nomor_pasal: str = Field(description="Nomor pasal, misal '1', '2', 'IV'")
     judul: Optional[str] = Field(default=None, description="Judul pasal bila ada, misal 'UANG JAMINAN'")
@@ -26,6 +33,24 @@ class ClauseAnalysis(BaseModel):
     alasan: str = Field(description="Alasan penilaian risiko secara obyektif")
     penjelasan_awam: str = Field(description="Penjelasan dalam bahasa santai dan mudah dipahami orang awam")
     saran_revisi: Optional[str] = Field(default=None, description="Usulan redaksional alternatif yang lebih adil dan seimbang")
+    sorotan: List[Highlight] = Field(default_factory=list, description="Bagian teks asli yang menjadi sumber risiko")
+    model_used: Optional[str] = Field(default=None, description="Model yang menganalisis pasal ini, misal 'gemini/gemini-3.8-flash', 'groq/...', atau 'heuristic'")
+
+
+def get_analysis_mode(clauses: List["ClauseAnalysis"]) -> str:
+    """
+    'ai'                 : semua pasal dianalisis LLM (Gemini/Groq)
+    'heuristik'          : semua pasal hanya dianalisis aturan kata kunci (LLM tidak tersedia)
+    'sebagian_heuristik' : campuran, atau ada pasal yang modelnya tidak tercatat (data lama)
+    """
+    if not clauses:
+        return "ai"
+    used = [c.model_used for c in clauses]
+    if all(m and m != "heuristic" for m in used):
+        return "ai"
+    if all(m == "heuristic" for m in used):
+        return "heuristik"
+    return "sebagian_heuristik"
 
 
 class QuestionItem(BaseModel):
@@ -61,6 +86,7 @@ class DocumentAnalysisResponse(BaseModel):
     created_at: str
     from_cache: bool = False
     segmentation_fallback: bool = False
+    analysis_mode: str = "ai"
     disclaimer: str = (
         "Analisis ini bersifat edukatif dan BUKAN merupakan nasihat hukum resmi. "
         "Untuk kepastian hukum dalam hal-hal berisiko tinggi, silakan berkonsultasi dengan ahli hukum."
