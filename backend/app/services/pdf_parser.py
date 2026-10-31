@@ -1,7 +1,19 @@
-import pymupdf as fitz  # PyMuPDF (replaces deprecated `import fitz`)
 import hashlib
+import io
+import logging
 import re
-from typing import Tuple
+from typing import List, Tuple
+
+logger = logging.getLogger(__name__)
+
+# PyMuPDF dipakai bila tersedia. Di sebagian laptop Windows (mis. Smart App Control aktif)
+# file native PyMuPDF bisa diblokir sehingga muncul "No module named 'mupdf'".
+# Karena itu ada cadangan pypdf (murni Python) agar upload PDF tetap jalan.
+try:
+    import pymupdf as fitz  # PyMuPDF (replaces deprecated `import fitz`)
+except Exception as _e:  # ImportError / DLL diblokir
+    fitz = None
+    logger.warning(f"PyMuPDF tidak dapat dimuat ({_e}); memakai pypdf sebagai pengganti.")
 
 
 class ScannedPdfError(Exception):
@@ -25,25 +37,12 @@ class PdfParser:
             ScannedPdfError: If PDF has no extractable text
             ValueError: If PDF exceeds max_pages
         """
-        try:
-            doc = fitz.open(stream=file_bytes, filetype="pdf")
-        except Exception as e:
-            raise ValueError(f"Gagal membaca file PDF: {str(e)}")
-
-        page_count = len(doc)
-        if page_count > max_pages:
-            raise ValueError(
-                f"Jumlah halaman ({page_count}) melebihi batas maksimal {max_pages} halaman."
-            )
-
-        extracted_pages = []
-        total_chars = 0
-
-        for page_num in range(page_count):
-            page = doc.load_page(page_num)
-            text = page.get_text("text")
-            extracted_pages.append(text)
-            total_chars += len(text.strip())
+        if fitz is not None:
+            extracted_pages = PdfParser._pages_pymupdf(file_bytes, max_pages)
+        else:
+            extracted_pages = PdfParser._pages_pypdf(file_bytes, max_pages)
+        page_count = len(extracted_pages)
+        total_chars = sum(len(t.strip()) for t in extracted_pages)
 
         full_text = "\n\n".join(extracted_pages).strip()
 
@@ -57,3 +56,31 @@ class PdfParser:
 
         doc_hash = PdfParser.calculate_hash(full_text)
         return full_text, doc_hash, page_count
+
+    @staticmethod
+    def _check_pages(page_count: int, max_pages: int):
+        if page_count > max_pages:
+            raise ValueError(
+                f"Jumlah halaman ({page_count}) melebihi batas maksimal {max_pages} halaman."
+            )
+
+    @staticmethod
+    def _pages_pymupdf(file_bytes: bytes, max_pages: int) -> List[str]:
+        try:
+            doc = fitz.open(stream=file_bytes, filetype="pdf")
+        except Exception as e:
+            raise ValueError(f"Gagal membaca file PDF: {str(e)}")
+        PdfParser._check_pages(len(doc), max_pages)
+        return [doc.load_page(i).get_text("text") for i in range(len(doc))]
+
+    @staticmethod
+    def _pages_pypdf(file_bytes: bytes, max_pages: int) -> List[str]:
+        try:
+            from pypdf import PdfReader
+            reader = PdfReader(io.BytesIO(file_bytes))
+            pages = reader.pages
+            page_count = len(pages)
+        except Exception as e:
+            raise ValueError(f"Gagal membaca file PDF: {str(e)}")
+        PdfParser._check_pages(page_count, max_pages)
+        return [(page.extract_text() or "") for page in pages]

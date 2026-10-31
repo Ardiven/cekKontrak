@@ -1,3 +1,4 @@
+import asyncio
 from fastapi import APIRouter, HTTPException, status
 from backend.app.models.schemas import ChatRequest, ChatResponse
 from backend.app.services.rag_service import rag_service
@@ -21,7 +22,7 @@ async def chat_with_document(doc_id: str, payload: ChatRequest):
         )
 
     # Ensure document is indexed in RAG service
-    rag_service.index_document(doc_id, doc.clauses)
+    await asyncio.to_thread(rag_service.index_document, doc_id, doc.clauses)
 
     response = await rag_service.answer_question(
         doc_id=doc_id,
