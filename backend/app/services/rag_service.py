@@ -1,5 +1,5 @@
 import re
-import math
+import zlib
 import logging
 from typing import List, Dict, Any, Tuple, Optional
 import numpy as np
@@ -15,9 +15,13 @@ logger = logging.getLogger(__name__)
 
 
 class RAGService:
+    LOCAL_DIM = 512
+
     def __init__(self):
         self.doc_clauses: Dict[str, List[ClauseAnalysis]] = {}
-        self.doc_embeddings: Dict[str, List[np.ndarray]] = {}
+        # Per dokumen: {"gemini": [vektor] atau None, "local": [vektor]}
+        self.doc_vectors: Dict[str, Dict[str, Optional[List[np.ndarray]]]] = {}
+        self.doc_signature: Dict[str, Tuple[str, ...]] = {}
         self.client: Optional[genai.Client] = None
         if settings.GEMINI_API_KEY:
             try:
@@ -25,87 +29,77 @@ class RAGService:
             except Exception as e:
                 logger.error(f"Failed to configure Gemini client for RAG: {e}")
 
+    @staticmethod
+    def _clause_text(c: ClauseAnalysis) -> str:
+        return f"Pasal {c.nomor_pasal} {c.judul or ''} {c.isi}"
+
     def index_document(self, doc_id: str, clauses: List[ClauseAnalysis]):
-        """Index clauses of a document for semantic retrieval."""
+        """Index clauses of a document for semantic retrieval (skip jika sudah terindeks)."""
+        signature = tuple(self._clause_text(c) for c in clauses)
+        if self.doc_signature.get(doc_id) == signature and doc_id in self.doc_vectors:
+            return
+
+        texts = list(signature)
         self.doc_clauses[doc_id] = clauses
-        embeddings = []
-        for c in clauses:
-            emb = self._get_embedding(f"Pasal {c.nomor_pasal} {c.judul or ''} {c.isi}")
-            embeddings.append(emb)
-        self.doc_embeddings[doc_id] = embeddings
+        self.doc_vectors[doc_id] = {
+            "gemini": self._gemini_embed(texts, task_type="RETRIEVAL_DOCUMENT"),
+            "local": [self._local_embed(t) for t in texts],
+        }
+        self.doc_signature[doc_id] = signature
 
-    def _get_embedding(self, text: str) -> np.ndarray:
-        """
-        Embeds text using Gemini embedding if available, otherwise builds a normalized token vector.
-        """
-        if self.client:
-            try:
-                result = self.client.models.embed_content(
-                    model="text-embedding-004",
-                    contents=text,
-                )
-                if result.embeddings and len(result.embeddings) > 0:
-                    vec = np.array(result.embeddings[0].values, dtype=np.float32)
-                    norm = np.linalg.norm(vec)
-                    return vec / (norm + 1e-9)
-            except Exception as e:
-                logger.warning(f"Gemini embedding failed, falling back to local vectorizer: {e}")
+    def _gemini_embed(self, texts: List[str], task_type: str) -> Optional[List[np.ndarray]]:
+        """Embedding via Gemini (satu request untuk banyak teks). None jika gagal."""
+        if not self.client or not texts:
+            return None
+        try:
+            result = self.client.models.embed_content(
+                model=settings.GEMINI_EMBEDDING_MODEL,
+                contents=texts,
+                config=types.EmbedContentConfig(task_type=task_type),
+            )
+            if not result.embeddings or len(result.embeddings) != len(texts):
+                return None
+            vectors = []
+            for e in result.embeddings:
+                vec = np.array(e.values, dtype=np.float32)
+                vectors.append(vec / (np.linalg.norm(vec) + 1e-9))
+            return vectors
+        except Exception as e:
+            logger.warning(f"Gemini embedding ({settings.GEMINI_EMBEDDING_MODEL}) gagal, pakai vektor lokal: {e}")
+            return None
 
-        # Local frequency-based dense hashing vectorizer for zero-dependency offline resilience
+    def _local_embed(self, text: str) -> np.ndarray:
+        """
+        Fallback offline: bag-of-words di-hash ke vektor tetap.
+        Memakai crc32 (stabil antar restart), bukan hash() Python yang acak per proses.
+        """
         words = re.findall(r"\w+", text.lower())
-        vec = np.zeros(256, dtype=np.float32)
+        vec = np.zeros(self.LOCAL_DIM, dtype=np.float32)
         for w in words:
-            h = hash(w) % 256
-            vec[h] += 1.0
+            vec[zlib.crc32(w.encode("utf-8")) % self.LOCAL_DIM] += 1.0
         norm = np.linalg.norm(vec)
-        if norm > 0:
-            vec = vec / norm
-        return vec
-
-    def _get_query_embedding(self, query: str) -> np.ndarray:
-        if self.client:
-            try:
-                result = self.client.models.embed_content(
-                    model="text-embedding-004",
-                    contents=query,
-                )
-                if result.embeddings and len(result.embeddings) > 0:
-                    vec = np.array(result.embeddings[0].values, dtype=np.float32)
-                    norm = np.linalg.norm(vec)
-                    return vec / (norm + 1e-9)
-            except Exception as e:
-                logger.warning(f"Gemini query embedding failed: {e}")
-
-        words = re.findall(r"\w+", query.lower())
-        vec = np.zeros(256, dtype=np.float32)
-        for w in words:
-            h = hash(w) % 256
-            vec[h] += 1.0
-        norm = np.linalg.norm(vec)
-        if norm > 0:
-            vec = vec / norm
-        return vec
+        return vec / norm if norm > 0 else vec
 
     def retrieve_relevant_clauses(self, doc_id: str, query: str, top_k: int = 3) -> List[ClauseAnalysis]:
         """Finds top-k most relevant clauses for the query."""
         clauses = self.doc_clauses.get(doc_id, [])
-        embeddings = self.doc_embeddings.get(doc_id, [])
-        if not clauses or not embeddings:
+        vectors = self.doc_vectors.get(doc_id)
+        if not clauses or not vectors:
             return []
 
-        q_vec = self._get_query_embedding(query)
-        scores = []
-        for idx, emb in enumerate(embeddings):
-            # Check length alignment
-            if len(emb) == len(q_vec):
-                sim = float(np.dot(emb, q_vec))
-            else:
-                sim = 0.0
-            scores.append((sim, idx))
+        # Pakai ruang vektor yang sama untuk dokumen dan pertanyaan
+        doc_vecs = None
+        q_vec = None
+        if vectors.get("gemini"):
+            q = self._gemini_embed([query], task_type="RETRIEVAL_QUERY")
+            if q:
+                doc_vecs, q_vec = vectors["gemini"], q[0]
+        if q_vec is None:
+            doc_vecs, q_vec = vectors["local"], self._local_embed(query)
 
+        scores = [(float(np.dot(emb, q_vec)), idx) for idx, emb in enumerate(doc_vecs)]
         scores.sort(key=lambda x: x[0], reverse=True)
-        top_indices = [idx for _, idx in scores[:top_k]]
-        return [clauses[i] for i in top_indices]
+        return [clauses[idx] for _, idx in scores[:top_k]]
 
     async def answer_question(self, doc_id: str, query: str, clauses_input: Optional[List[ClauseAnalysis]] = None) -> ChatResponse:
         """
@@ -134,27 +128,30 @@ class RAGService:
         system_prompt = SYSTEM_RAG_CHAT_PROMPT.format(context=context_str)
         user_prompt = f"Pertanyaan Pengguna: {query}\n\nJawablah dengan tepat berdasarkan klausul relevan di atas dan wajib sebut nomor pasal rujukan."
 
-        # 1. Try Gemini
+        # 1. Try Gemini (model utama, lalu model cadangan bila sibuk/kena limit)
         if self.client:
-            try:
-                config = types.GenerateContentConfig(
-                    system_instruction=system_prompt
-                )
-                response = await self.client.aio.models.generate_content(
-                    model=settings.GEMINI_MODEL,
-                    contents=user_prompt,
-                    config=config
-                )
-                reply = (response.text or "").strip()
-                cited = self._extract_cited_clauses(reply, relevant_clauses)
-                return ChatResponse(
-                    reply=reply,
-                    cited_clauses=cited,
-                    is_grounded=True,
-                    model_used=f"gemini/{settings.GEMINI_MODEL}"
-                )
-            except Exception as e:
-                logger.warning(f"RAG Gemini answer failed: {e}")
+            from backend.app.services.llm_service import llm_service  # cooldown dibagi dengan analisis
+            for model in llm_service.gemini_models():
+                try:
+                    config = types.GenerateContentConfig(
+                        system_instruction=system_prompt
+                    )
+                    response = await self.client.aio.models.generate_content(
+                        model=model,
+                        contents=user_prompt,
+                        config=config
+                    )
+                    reply = (response.text or "").strip()
+                    cited = self._extract_cited_clauses(reply, relevant_clauses)
+                    return ChatResponse(
+                        reply=reply,
+                        cited_clauses=cited,
+                        is_grounded=True,
+                        model_used=f"gemini/{model}"
+                    )
+                except Exception as e:
+                    logger.warning(f"RAG Gemini ({model}) answer failed: {str(e)[:300]}")
+                    llm_service.handle_error(model, str(e))
 
         # 2. Try Groq
         if settings.GROQ_API_KEY:
@@ -172,9 +169,10 @@ class RAGService:
                     ],
                     "temperature": 0.2
                 }
-                async with httpx.AsyncClient(timeout=20.0) as client:
+                async with httpx.AsyncClient(timeout=60.0) as client:
                     resp = await client.post(url, json=payload, headers=headers)
-                    resp.raise_for_status()
+                    if resp.status_code >= 400:
+                        raise RuntimeError(f"Groq {resp.status_code} (model '{settings.GROQ_MODEL}'): {resp.text[:300]}")
                     data = resp.json()
                     reply = data["choices"][0]["message"]["content"].strip()
                     cited = self._extract_cited_clauses(reply, relevant_clauses)
@@ -191,14 +189,23 @@ class RAGService:
         return self._heuristic_rag_answer(query, relevant_clauses)
 
     def _extract_cited_clauses(self, text: str, relevant: List[ClauseAnalysis]) -> List[str]:
-        found = set()
-        # Find [Pasal X] or Pasal X
-        matches = re.findall(r"Pasal\s+([0-9]+|[IVXLCDM]+)", text, re.IGNORECASE)
-        for m in matches:
-            found.add(m)
+        """Ambil nomor pasal yang benar-benar disebut di jawaban (mendukung '3', 'Poin 6.3', 'IV')."""
+        found = []
+        for c in relevant:
+            num = re.escape(c.nomor_pasal)
+            if re.fullmatch(r"[0-9]+|[IVXLCDMivxlcdm]+", c.nomor_pasal):
+                pattern = rf"Pasal\s+{num}(?!\d|\.\d)"  # angka polos wajib diawali "Pasal"
+            else:
+                pattern = rf"(?<![\w.]){num}(?!\d|\.\d)"  # mis. "Poin 6.3" tidak cocok dengan "Poin 6.30"
+            if re.search(pattern, text, re.IGNORECASE) and c.nomor_pasal not in found:
+                found.append(c.nomor_pasal)
+        if not found:
+            for m in re.findall(r"Pasal\s+([0-9]+|[IVXLCDM]+)", text, re.IGNORECASE):
+                if m not in found:
+                    found.append(m)
         if not found and relevant:
-            found.add(relevant[0].nomor_pasal)
-        return sorted(list(found))
+            found.append(relevant[0].nomor_pasal)
+        return found
 
     def _heuristic_rag_answer(self, query: str, relevant: List[ClauseAnalysis]) -> ChatResponse:
         """Fallback grounded response generator ensuring FR-23 & FR-24 compliance."""

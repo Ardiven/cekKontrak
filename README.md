@@ -32,7 +32,7 @@ Aplikasi web publik yang membantu masyarakat awam — terutama mahasiswa, pekerj
 | 5 | **Chatbot RAG Terpercaya** | AI hanya menjawab dari isi kontrak, selalu sebut nomor pasal, no hallucination |
 | 6 | **Ekspor Laporan PDF** | Ringkasan skor risiko + daftar pertanyaan + draf revisi dalam PDF siap cetak |
 | 7 | **Hash Caching** | Dokumen identik dianalisis instan tanpa konsumsi API quota ulang |
-| 8 | **Multi-LLM Resilience** | Gemini → Groq → Heuristic fallback, tanpa downtime |
+| 8 | **Multi-LLM Resilience** | Gemini → Gemini Flash-Lite → Groq → Heuristic fallback, tanpa downtime |
 | 9 | **Badge Model AI** | Setiap jawaban chatbot menampilkan model yang digunakan (Gemini / Groq / Heuristic) |
 | 10 | **4 Contoh Kontrak Nyata** | Sewa Kos, Kerja Magang, Pinjaman Dana, S&K Aplikasi — langsung coba 1 klik |
 
@@ -47,8 +47,9 @@ Aplikasi web publik yang membantu masyarakat awam — terutama mahasiswa, pekerj
 | ASGI Server | **Uvicorn** |
 | PDF Parser | **PyMuPDF (`fitz`)** |
 | Clause Segmentation | **Regex** (pola Pasal bahasa Indonesia) |
-| LLM Primary | **Google Gemini API** (`gemini-2.5-flash`) |
-| LLM Fallback | **Groq API** (`llama-3.3-70b-versatile`) |
+| LLM Primary | **Google Gemini API** (`gemini-3.8-flash`) |
+| LLM Fallback | **Groq API** (`openai/gpt-oss-120b`) |
+| Embedding | **Gemini `gemini-embedding-001`** |
 | Vector Search / RAG | Normalized cosine similarity (NumPy) |
 | Ekspor PDF | **ReportLab** |
 | Database & Cache | **SQLite** (persistent, siap migrasi Supabase) |
@@ -133,7 +134,7 @@ cekKontrak/
 │       ├── models/
 │       │   └── schemas.py        # Pydantic schemas (request/response models)
 │       ├── db/
-│       │   └── database.py       # SQLite setup, CRUD operations, hash cache
+│       │   └── storage.py        # SQLite setup, CRUD operations, hash cache
 │       ├── api/
 │       │   ├── router.py         # API router aggregator
 │       │   └── endpoints/
@@ -254,10 +255,12 @@ Isi file `.env` dengan:
 ```env
 # LLM Providers (minimal isi salah satu)
 GEMINI_API_KEY=your_gemini_api_key_here
-GEMINI_MODEL=gemini-2.5-flash
+GEMINI_MODEL=gemini-3.8-flash
+GEMINI_EMBEDDING_MODEL=gemini-embedding-001
+GEMINI_FALLBACK_MODEL=gemini-3.5-flash-lite
 
 GROQ_API_KEY=your_groq_api_key_here
-GROQ_MODEL=llama-3.3-70b-versatile
+GROQ_MODEL=openai/gpt-oss-120b
 
 # Database
 DATABASE_PATH=cekkontrak.db
@@ -348,9 +351,12 @@ cd frontend && npm install && npm run build && cd ..
 | Variable | Wajib | Default | Keterangan |
 |----------|-------|---------|------------|
 | `GEMINI_API_KEY` | Opsional* | - | API key Google Gemini (primary LLM) |
-| `GEMINI_MODEL` | Tidak | `gemini-2.5-flash` | Nama model Gemini |
+| `GEMINI_MODEL` | Tidak | `gemini-3.8-flash` | Nama model Gemini |
+| `GEMINI_EMBEDDING_MODEL` | Tidak | `gemini-embedding-001` | Model embedding untuk RAG chatbot |
+| `GEMINI_FALLBACK_MODEL` | Tidak | `gemini-3.5-flash-lite` | Model Gemini cadangan saat model utama sibuk/kena limit |
+| `LLM_BATCH_SIZE` | Tidak | `15` | Jumlah pasal per 1 request AI (hemat kuota gratis) |
 | `GROQ_API_KEY` | Opsional* | - | API key Groq (fallback LLM) |
-| `GROQ_MODEL` | Tidak | `llama-3.3-70b-versatile` | Nama model Groq |
+| `GROQ_MODEL` | Tidak | `openai/gpt-oss-120b` | Nama model Groq |
 | `DATABASE_PATH` | Tidak | `cekkontrak.db` | Path file SQLite |
 | `MAX_FILE_SIZE_MB` | Tidak | `10` | Batas ukuran PDF (MB) |
 | `MAX_PAGES` | Tidak | `25` | Batas halaman PDF |
